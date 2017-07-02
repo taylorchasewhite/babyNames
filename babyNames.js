@@ -1,10 +1,18 @@
 /*
 	Global vars
 */
-var babyNameData;
+var babyNameData,parentDivInfo;
 
-function babyNamesInitialize() {
+function babyNamesInitialize(generationData) {
 	loadYearsData();
+	parentDivInfo=generationData;
+	genMultipleBabyNameLists(parentDivInfo);
+}
+
+function genMultipleBabyNameLists(generationData) {
+	generationData.forEach(function(d) {
+		genBabyNameList(d.id,d.path);
+	});
 }
 
 function genBabyNameList(elementID,path) {
@@ -26,6 +34,7 @@ function genBabyNameList(elementID,path) {
 }
 
 function loadBabyNameData(parentDivID,path) {	
+	console.log('loadBabyNameData:'+ parentDivID + ", " + path);
 	d3.csv(path,function(error,data) {
 		if (error) {
 			throw error;
@@ -43,6 +52,7 @@ function bindBabyNamesToDOM(babyData,parentDivID) {
 		babyData=babyNameData;
 	}
 	var list=d3.select("#"+parentDivID).append("ul");
+	
 	list.selectAll("li")
 	.data(babyData)
 	.enter()
@@ -61,6 +71,12 @@ function bindBabyNamesToDOM(babyData,parentDivID) {
 			return "both";	
 		}
 	});
+}
+
+function removeBabyNamesFromDOM(parentDivID) {
+	d3.select("#"+parentDivID)
+		.selectAll("ul").remove();	
+	console.log("removed");
 }
 
 function loadYearsData() {
@@ -87,15 +103,42 @@ function loadYearsData() {
 		.attr('value',function(d) {
 			return d.Year;
 		});
-	})
+		addSelectHandler();
+	});
 }
 
 function addSelectHandler() {
 	var yearSelect = $("#selYear");
-	
+
 	yearSelect.change(function() {
-		//generateDropdown(appSelect.val());
-		window.location.href = "http://taylorchasewhite.com/d3/nabu/Shared/?app="+yearSelect.val();
+		onYearChange();
 	});
 	
+}
+
+function onYearChange() {
+	console.log("onYearChange(): ");
+	console.log(parentDivInfo);
+	var generationInfo=[];
+	var yearSelect = $("#selYear");
+	var selID;
+	parentDivInfo.forEach(function(d) {
+		removeBabyNamesFromDOM(d.id);
+		if (!d.selRelated) {
+			generationInfo.push({
+				id:d.id,
+				selRelated:false
+			});
+		}
+		else {
+			generationInfo.push({
+				id:d.id,
+				path:"data/names/yob"+yearSelect.val()+".txt",
+				selRelated:true
+			});
+		}
+	});
+	parentDivInfo=generationInfo;
+	console.log(parentDivInfo);
+	genMultipleBabyNameLists(parentDivInfo);
 }

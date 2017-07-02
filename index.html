@@ -13,9 +13,9 @@
 		<div id="divTaylorsBabyNames"></div>
 		<div id="divAllBabyNames"></div>
 		<script>
-			babyNamesInitialize();
-			genBabyNameList("divTaylorsBabyNames");
-			genBabyNameList("divAllBabyNames","data/names/yob2016.txt");
+			babyNamesInitialize([{id:"divTaylorsBabyNames",selRelated:false},{id:"divAllBabyNames",path:"data/names/yob2016.txt",selRelated:true}]);
+			//genBabyNameList("divTaylorsBabyNames");
+			//genBabyNameList("divAllBabyNames","data/names/yob2016.txt");
 		</script>
 			
 	</body>
