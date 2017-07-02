@@ -19,14 +19,14 @@ function genBabyNameList(elementID,path) {
 	}
 	// path
 	if (!path) {
-		path="./data/babyNames.tsv";
+		path="./data/babyNames.csv";
 	}
 	
 	loadBabyNameData(parentDivID,path);
 }
 
 function loadBabyNameData(parentDivID,path) {	
-	d3.tsv(path,function(error,data) {
+	d3.csv(path,function(error,data) {
 		if (error) {
 			throw error;
 		}
