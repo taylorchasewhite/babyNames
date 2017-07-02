@@ -1,17 +1,66 @@
 /*
 	Global vars
 */
-var babyNameData,parentDivID;
+var babyNameData;
 
-function babyNamesInitialize(elementID) {
+function babyNamesInitialize() {
+	loadYearsData();
+}
+
+function genBabyNameList(elementID,path) {
+	var parentDivID;
+	
+	// element to build in
 	if (elementID) {
 		parentDivID=elementID;
 	}
 	else {
 		parentDivID="divBabyNames";
 	}
-	loadYearsData();
-	loadBabyNameData();
+	// path
+	if (!path) {
+		path="./data/babyNames.tsv";
+	}
+	
+	loadBabyNameData(parentDivID,path);
+}
+
+function loadBabyNameData(parentDivID,path) {	
+	d3.tsv(path,function(error,data) {
+		if (error) {
+			throw error;
+		}
+		data.sort(function(a,b) {
+			return d3.ascending(a.Name,b.Name);
+		});
+		babyNameData=data;
+		bindBabyNamesToDOM(data,parentDivID);
+	});
+}
+
+function bindBabyNamesToDOM(babyData,parentDivID) {
+	if(!babyData) {
+		babyData=babyNameData;
+	}
+	var list=d3.select("#"+parentDivID).append("ul");
+	list.selectAll("li")
+	.data(babyData)
+	.enter()
+	.append("li")
+	.text(function(d) {
+		return d.Name;
+	})
+	.attr("class",function(d) {
+		if (d.Sex==="Girl" || d.Sex==="F") {
+			return "girl";
+		}
+		else if (d.Sex==="Boy" || d.Sex==="M") {
+			return "boy";
+		}
+		else {
+			return "both";	
+		}
+	});
 }
 
 function loadYearsData() {
@@ -39,44 +88,6 @@ function loadYearsData() {
 			return d.Year;
 		});
 	})
-}
-
-function loadBabyNameData() {
-	d3.tsv("./data/babyNames.tsv",function(error,data) {
-		if (error) {
-			throw error;
-		}
-		data.sort(function(a,b) {
-			return d3.ascending(a.Name,b.Name);
-		});
-		babyNameData=data;
-		bindBabyNamesToDOM(data);
-	});
-}
-
-function bindBabyNamesToDOM(babyData) {
-	if(!babyData) {
-		babyData=babyNameData;
-	}
-	var list=d3.select("#"+parentDivID).append("ul");
-	list.selectAll("li")
-	.data(babyData)
-	.enter()
-	.append("li")
-	.text(function(d) {
-		return d.Name;
-	})
-	.attr("class",function(d) {
-		if (d.Sex==="Girl") {
-			return "girl";
-		}
-		else if (d.Sex==="Boy") {
-			return "boy";
-		}
-		else {
-			return "both";	
-		}
-	});
 }
 
 function addSelectHandler() {

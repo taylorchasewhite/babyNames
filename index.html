@@ -10,9 +10,13 @@
 		<div class="article">
 			Data on name frequency can be found at the Social Security Administration's Open Data <a href="https://www.ssa.gov/open/data/">website</a>.
 		</div>
-		<div id="divBabyNames"></div>
+		<div id="divTaylorsBabyNames"></div>
+		<div id="divAllBabyNames"></div>
 		<script>
-			babyNamesInitialize("divBabyNames");
+			babyNamesInitialize();
+			genBabyNameList("divTaylorsBabyNames");
+			genBabyNameList("divAllBabyNames","data/names/yob2016.txt");
 		</script>
+			
 	</body>
 </html>
