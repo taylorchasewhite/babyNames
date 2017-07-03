@@ -39,11 +39,8 @@ function loadBabyNameData(parentDivID,path) {
 		if (error) {
 			throw error;
 		}
-		data.sort(function(a,b) {
-			return d3.ascending(a.Name,b.Name);
-		});
 		babyNameData=data;
-		//bindBabyNamesToDOM(data,parentDivID);
+		bindBabyNamesToDOM(data,parentDivID);
 		generateBabyBubbleChart(data,parentDivID);
 	});
 }
@@ -52,6 +49,10 @@ function generateBabyBubbleChart(babyData,parentDivID) {
 	if (parentDivID!=="divAllBabyNames") {
 		return;
 	}
+	babyData.sort(function(a,b) {
+		return d3.ascending(a.Name,b.Name);				
+	});
+	
 	var newData=[];
 	var maxBirths=d3.max(babyData, function(d) {
 		return +d.BirthCount;
@@ -70,59 +71,50 @@ function generateBabyBubbleChart(babyData,parentDivID) {
 		.data(newData)
 		.call(chart);
 	return;
-	
-	var width = 1920,
-		height = 1920;
-	var svg = d3.select("body").append("svg")
-		.attr("height",height)
-		.attr("width",width);
-
-	var format = d3.format(",d");
-	var scaleRadius = d3.scaleLinear()
-		.domain([d3.min(data, function(d) { return +d.BirthCount; }),
-			d3.max(data, function(d) { return +d.BirthCount; })])
-		.range([5,18]);
-	
-	//var color = d3.scaleOrdinal(d3.schemeCategory20c);
-	
-	svg
-	.selectAll("circle")
-	.data(babyData)
-	.enter()
-	.append("circle")
-	.attr("r",function(d) {
-		return scaleRadius(d.BirthCount);
-	})
-	.attr("class",function(d) {
-		return getSexClass(d);
-	})
-	.on("mouseover", function(d){
-		tooltip.html(d.Name +"<br>"+ getSexClass(d.Sex) +"<br>"+d.BirthCount);
-		return tooltip.style("visibility", "visible");
-	})
-    .on("mousemove", function(){
-		return tooltip.style("top", (d3.event.pageY-10)+"px").style("left",(d3.event.pageX+10)+"px");
-	})
-	.on("mouseout", function(){return tooltip.style("visibility", "hidden");
-});
-	
 }
 
 function bindBabyNamesToDOM(babyData,parentDivID) {
 	if(!babyData) {
 		babyData=babyNameData;
 	}
-	
+	var haveCounts;
 	/*var rscale = d3.scaleLinear()*/
 	
-	var list=d3.select("#"+parentDivID).append("ul");
+	babyData.sort(function(a,b) {
+		if (a.hasOwnProperty("BirthCount")) {
+			haveCounts=true;
+			return b.BirthCount-a.BirthCount;
+		}
+		else {
+			return d3.ascending(a.Name,b.Name);				
+		}
+	});
+	
+	
+	
+	var list;
+	if (haveCounts) {
+		list=d3.select("#"+parentDivID).append("ol");
+		while (babyData.length > 3000) {
+			babyData.pop();
+		}
+	}
+	else {
+		list=d3.select("#"+parentDivID).append("ul");
+	}
 
+	list.classed("threeCol",true);		
 	list.selectAll("li")
 	.data(babyData)
 	.enter()
 	.append("li")
 	.text(function(d) {
-		return d.Name;
+		if (haveCounts) {
+			return d.Name + "\t - " + d.BirthCount + " births";			
+		}
+		else {
+			return d.Name;
+		}
 	})
 	.attr("class",function(d) {
 		return getSexClass(d);
