@@ -3,6 +3,7 @@
 	    <meta charset="UTF-8">
 		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 		<script src="https://d3js.org/d3.v4.min.js" type="text/javascript"></script>
+		<script src="./bubbleChart.js" type="text/javascript"></script>
 		<script src="./babyNames.js" type="text/javascript"></script>
 		<link rel="stylesheet" type="text/css" href="./babyNames.css">
 	</head>
@@ -11,7 +12,9 @@
 			Data on name frequency can be found at the Social Security Administration's Open Data <a href="https://www.ssa.gov/open/data/">website</a>.
 		</div>
 		<div id="divTaylorsBabyNames"></div>
-		<div id="divAllBabyNames"></div>
+		<div id="divAllBabyNames">
+			<svg></svg>
+		</div>
 		<script>
 			babyNamesInitialize([{id:"divTaylorsBabyNames",selRelated:false},{id:"divAllBabyNames",path:"data/names/yob2016.txt",selRelated:true}]);
 			//genBabyNameList("divTaylorsBabyNames");
