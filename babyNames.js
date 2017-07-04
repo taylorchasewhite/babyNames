@@ -9,10 +9,11 @@
  * @requires d3.v4.js
  * @requires jquery
  */
+
 /*
 	Global vars
 */
-var chart,babyNameData,parentDivInfo,currentlyRemovedElement;
+var babyNameData,chart,parentDivInfo,currentlyRemovedElement;
 var yearSelect;
 
 

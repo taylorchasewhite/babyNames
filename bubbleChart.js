@@ -12,6 +12,23 @@
 
 /**
  * Instantiate the settings before rendering the bubble chart
+ * @class
+ * @example
+ * var chart = bubbleChart(); // instantiate the chart
+ * 
+ * // update settings
+ * chart.width(850).height(850).minRadius(7).maxRadius(55).forceApart(-170); 
+ * 
+ * // example of chaining
+ * chart.columnForColors("Sex").columnForRadius("BirthCount");
+ * chart.customColors(["M","F"],["#70b7f0","#e76486"]).showTitleOnCircle(true);
+ * chart.title('Most popular baby names in 2016').columnForTitle("Name");
+ * chart.unitName("babies");
+ * 
+ * // load the data and render the chart 
+ * d3.select("#divBubbleChart")
+ * 	.data(newData)
+ * 	.call(chart);
  * 
  * @returns Chart function so that you can render the chart when ready
  */
@@ -162,13 +179,33 @@ function bubbleChart() {
 			.text(title);
 	}
 
+
+	chart.width = chartWidth;
+	chart.height = chartHeight;
+	chart.columnForColors = chartColForColors;
+	chart.columnForRadius = chartColForRadius;
+	chart.columnForTitle = chartColForTitle;
+	chart.minRadius = chartMinRadius;
+	chart.maxRadius = chartMaxRadius;
+	chart.forceApart = chartForceApart;
+	chart.unitName = chartUnitName;
+	chart.customColors = chartCustomColors;
+	chart.showTitleOnCircle = chartShowTitleOnCircle;
+	chart.title=chartTitle;
+	chart.remove = chartRemove;
+
 	/**
+	 * Get/set the height of the chart
+	 * Use 'chart.width' to get or set. 
+	 * @example
+	 * chart.columnForColors(960);	// Sets the width of the SVG to 960
+	 * chart.columnForColors();	// returns 960
 	 * 
-	 * 
+	 * @public
 	 * @param {number} [value] - The width of the chart 
 	 * @returns function - Chart, allowing chaining of commands
 	 */
-	chart.width = function(value) {
+	function chartWidth(value) {
 		if (!arguments.length) {
 			return width;
 		}
@@ -177,12 +214,17 @@ function bubbleChart() {
 	};
 
 	/**
-	 * Get/set the height of the chart
+	 * Get/set the height of the chart.
+	 * Use 'chart.height' to get or set. 
+	 * @example
+	 * chart.height(960);	// Sets the height of the SVG to 960
+	 * chart.height();		// returns 960
 	 * 
+	 * @public
 	 * @param {number} [value] - The height of the chart
 	 * @returns function - Chart, allowing chaining of commands
 	 */
-	chart.height = function(value) {
+	function chartHeight(value) {
 		if (!arguments.length) {
 			return height;
 		}
@@ -193,12 +235,16 @@ function bubbleChart() {
 
 
 	/**
-	 * Get/set the property used to determine the colors of the bubbles
-	 * 
+	 * Get/set the property used to determine the colors of the bubbles. 
+	 * Use 'chart.columnForColors' to get or set. 
+	 * @example
+	 * chart.columnForColors("Sex");	// Sets the column to birthCount
+	 * chart.columnForColors();	// returns "Sex"
+	 * @public
 	 * @param {string} [value] - Property name to bind the bubble color to.
 	 * @returns function - Chart, allowing chaining of commands
 	 */
-	chart.columnForColors = function(value) {
+	function chartColForColors(value) {
 		if (!arguments.length) {
 			return columnForColors;
 		}
@@ -207,12 +253,16 @@ function bubbleChart() {
 	};
 	
 	/**
-	 * Get/set the property to determine the titles of the bubbles
+	 * Get/set the property to determine the titles of the bubbles.
+	 * Use 'chart.columnForTitle' to get or set. 
+	 * @example
+	 * chart.columnForTitle("Name");	// Sets the column to birthCount
+	 * chart.columnForTitle();		// returns "Name"
 	 * 
 	 * @param {string} [value] - Property name to bind the bubble title to.
 	 * @returns function - Chart, allowing chaining of commands
 	 */
-	chart.columnForTitle = function(value) {
+	function chartColForTitle(value) {
 		if (!arguments.length) {
 			return columnForTitle;
 		}
@@ -221,12 +271,17 @@ function bubbleChart() {
 	};
 
 	/**
-	 * Get/set the property to determine the radii of the bubbles
+	 * Get/set the property to determine the radii of the bubbles.
+	 * Use 'chart.columnForRadius' to get or set. 
 	 * 
+	 * @example
+	 * chart.columnForRadius("birthCount");	// Sets the column to birthCount
+	 * chart.columnForRadius();		// returns "birthCount"
+	 * @public
 	 * @param {string} [value] - Property name to bind the bubble radius to. Requires a numerical property.
 	 * @returns function - Chart, allowing chaining of commands
 	 */
-	chart.columnForRadius = function(value) {
+	function chartColForRadius (value) {
 		if (!arguments.length) {
 			return columnForRadius;
 		}
@@ -235,12 +290,16 @@ function bubbleChart() {
 	};
 	
 	/**
-	 * Get/set the minimum radius of the bubbles
+	 * Get/set the minimum radius of the bubbles.
+	 * Use 'chart.minRadius' to get or set. 
+	 * @example
+	 * 	chart.columnForColors(3); 	// Sets the column to birthCount
+	 *  chart.columnForColors();	// returns 3
 	 * 
 	 * @param {number} [value] - The minimum radius for the width of the bubbles
 	 * @returns function - Chart, allowing chaining of commands
 	 */
-	chart.minRadius = function(value) {
+	function chartMinRadius(value) {
 		if (!arguments.length) {
 			return minRadius;
 		}
@@ -249,12 +308,14 @@ function bubbleChart() {
 	};
 	
 	/**
-	 * Get/set the maximum radius of the bubbles
+	 * Get/set the maximum radius of the bubbles.
+	 * Use 'chart.maxRadius' to get or set.
 	 * 
+	 * @public
 	 * @param {number} [value] - The maximum radius of the bubbles for the largest value in the dataset
 	 * @returns function - Chart, allowing chaining of commands
 	 */
-	chart.maxRadius = function(value) {
+	function chartMaxRadius(value) {
 		if (!arguments.length) {
 			return maxRadius;
 		}
@@ -264,12 +325,17 @@ function bubbleChart() {
 	
 	/**
 	 * Get/set the unit name for the property the is represented by the radius of the bubbles. 
-	 * Used in the tooltip of the bubbles
+	 * Used in the tooltip of the bubbles.
+	 * Use 'chart.unitName' to get or set.
+	 * @example
+	 * chart.unitName(" babies");	// Sets the column to birthCount
+	 * chart.unitName();		// returns " babies"
 	 * 
+	 * @public
 	 * @param {any} [value] - The unit name to display on the tooltip when hovering over a bubble
 	 * @returns function - Chart, allowing chaining of commands
 	 */
-	chart.unitName = function(value) {
+	function chartUnitName(value) {
 		if (!arguments.length) {
 			return unitName;
 		}
@@ -279,11 +345,16 @@ function bubbleChart() {
 	
 	/**
 	 * Get/set the force the separates and pushes together the bubbles on loading of the chart
+	 * Use 'chart.forceApart' to get or set.
+	 * @example
+	 * chart.forceApart(150);	// Sets the column to birthCount
+	 * chart.forceApart();	// returns 150
 	 * 
+	 * @public
 	 * @param {any} [value] - Determines the force to separate the bubbles from each other when loading the chart
 	 * @returns function - Chart, allowing chaining of commands
 	 */
-	chart.forceApart = function(value) {
+	function chartForceApart(value) {
 		if (!arguments.length) {
 			return forceApart;
 		}
@@ -292,12 +363,17 @@ function bubbleChart() {
 	};
 	
 	/**
-	 * Get/set the property that determines if we show or hide the title of the data on the bubbles
+	 * Get/set the property that determines if we show or hide the title of the data on the bubbles.
+	 * Use 'chart.showTitleOnCircle' to get or set.
+	 * @example
+	 * chart.showTitleOnCircle(true); 	
+	 * chart.forceApart();	// returns true
 	 * 
+	 * @public
 	 * @param {boolean} [value] - Determines whether to show or hide the title of the data on the bubbles
 	 * @returns function - Chart, allowing chaining of commands
 	 */
-	chart.showTitleOnCircle = function(value) {
+	function chartShowTitleOnCircle(value) {
 		if (!arguments.length) {
 			return showTitleOnCircle;
 		}
@@ -307,13 +383,16 @@ function bubbleChart() {
 	
 	/**
 	 * Set the domain and range of the colors used for the bubbles. This is only needed if you want to use custom colors in the chart.
+	 * Use 'chart.customColors' to set.
+	 * @example
+	 * chart.customColors(["M","F"], ["#70b7f0","#e76486"]); 	// Sets the custom colors domain and range
 	 * 
 	 * @param {any[]} domain - The domain. This is the set of categories used for binding the colors.
 	 * @param {string[]} range - The range. This is an array of color codes that you want to represent each category in the domain.
-	 * 							Example: ["#70b7f0","#e76486"]. Note: The length of the array must perfectly match the length of the domain array.
+	 * 							 Note: The length of the array must perfectly match the length of the domain array.
 	 * @returns function - Chart, allowing chaining of commands
 	 */
-	chart.customColors = function(domain,range) {
+	function chartCustomColors(domain,range) {
 		customColors=true;
 		customDomain=domain;
 		customRange=range;
@@ -321,12 +400,16 @@ function bubbleChart() {
 	};
 	
 	/**
-	 * Get/set the property that determines the title of the chart
-	 * 
+	 * Get/set the property that determines the title of the chart.
+	 * Use 'chart.title' to get or set.
+	 * @example
+	 * chart.title("Birth Count in the U.S. in 2016"); // Sets the chart title
+	 * chart.title();	// returns "Birth Count in the U.S. in 2016"
+	 * @public
 	 * @param {string} value - The title of the chart
 	 * @returns function - Chart, allowing chaining of commands
 	 */
-	chart.title = function(value) {
+	function chartTitle(value) {
 		if (!arguments.length) {
 			return title;
 		}
@@ -336,11 +419,11 @@ function bubbleChart() {
 	
 	/**
 	 * Animate the removal of data from the chart (and the title)
-	 * 
+	 * @public
 	 * @param {function} [callback] - At the end of each node animation call this function for each node
 	 * @returns function - Chart, allowing chaining of commands
 	 */
-	chart.remove = function(callback) {
+	function chartRemove(callback) {
 		chartSVG.selectAll("text")
 		.style("opacity",1)
 		.transition()
