@@ -12,6 +12,7 @@
 function bubbleChart() {
 	var width = 960,
 	height = 960,
+	marginTop = 96,
 	minRadius = 6,
 	maxRadius = 20,
 	columnForColors = "category",
@@ -22,13 +23,23 @@ function bubbleChart() {
 	customColors=false,
 	customRange,
 	customDomain,
+	chartSelection,
+	chartSVG,
 	showTitleOnCircle=false;
 
 	function chart(selection) {
 		var data = selection.enter().data();
+		chartSelection=selection;
 		var div = selection,
 		svg = div.selectAll('svg');
 		svg.attr('width', width).attr('height', height);
+		chartSVG=svg;
+
+	svg.append('text')
+		.attr('x',width/2).attr('y',marginTop)
+		.attr("text-anchor", "middle")
+		.attr("font-size","1.8em")
+		.text(title);
 
 		var tooltip = selection
 		.append("div")
@@ -52,7 +63,7 @@ function bubbleChart() {
 
 		function ticked(e) {
 			node.attr("transform",function(d) {
-				return "translate(" + [d.x+(width / 2), d.y+(height / 2)] +")";
+				return "translate(" + [d.x+(width / 2), d.y+((height+marginTop) / 2)] +")";
 			});
 		}
 
@@ -80,8 +91,9 @@ function bubbleChart() {
 		.data(data)
 		.enter()
 		.append("g")
-		.attr('transform', 'translate(' + [width / 2, height / 2] + ')');		
-	
+		.attr('transform', 'translate(' + [width / 2, height / 2] + ')')
+		.style('opacity',1);
+			
 		node.append("circle")
 		.attr("id",function(d,i) {
 			return i;
@@ -152,6 +164,7 @@ function bubbleChart() {
 			return height;
 		}
 		height = value;
+		marginTop=0.05*height;
 		return chart;
 	};
 
@@ -225,7 +238,35 @@ function bubbleChart() {
 		customDomain=domain;
 		customRange=range;
 		return chart;
+	};
+	
+	chart.title = function(value) {
+		if (!arguments.length) {
+			return title;
+		}
+		title = value;
+		return chart;
 	}
-
+	
+	chart.remove = function(callback) {
+		if (!arguments.length) {
+			chartSVG.selectAll("text")
+			.style("opacity",1)
+			.transition()
+			.duration(500)
+			.style("opacity", "0")
+			.remove();		
+		}
+		else {			
+			chartSVG.selectAll("g")
+			.style("opacity",1)
+			.duration(500)
+			.style("opacity", "0")
+			.remove()
+			.on("end", callback);
+		}
+		return chart;
+	}
+	
 	return chart;
 }

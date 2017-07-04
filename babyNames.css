@@ -1,15 +1,11 @@
-.boy {
+.divCenter {
+	display:inline-block;
+	margin:auto auto;
+}
+svg .boy, .boy {
 	color:#70b7f0;
 }
 
-.girl {
+svg .girl, .girl {
 	color:#e76486;
-}
-
-svg .boy {
-	fill:#70b7f0;
-}
-
-svg .girl {
-	fill:#e76486;
 }

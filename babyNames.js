@@ -1,7 +1,8 @@
 /*
 	Global vars
 */
-var babyNameData,parentDivInfo;
+var chart,babyNameData,parentDivInfo,currentlyRemovedElement;
+var yearSelect;
 
 function babyNamesInitialize(generationData) {
 	loadYearsData();
@@ -15,38 +16,41 @@ function genMultipleBabyNameLists(generationData) {
 	});
 }
 
-function genBabyNameList(elementID,path) {
-	var parentDivID;
+function genBabyNameList(elementIDs,path) {
+	var parentDivIDs;
 	
 	// element to build in
-	if (elementID) {
-		parentDivID=elementID;
+	if (elementIDs) {
+		parentDivIDs=elementIDs;
 	}
 	else {
-		parentDivID="divBabyNames";
+		parentDivIDs=["divBabyNames"];
 	}
 	// path
 	if (!path) {
 		path="./data/babyNames.csv";
 	}
 	
-	loadBabyNameData(parentDivID,path);
+	loadBabyNameData(parentDivIDs,path);
 }
 
-function loadBabyNameData(parentDivID,path) {	
-	console.log('loadBabyNameData:'+ parentDivID + ", " + path);
+function loadBabyNameData(parentDivIDs,path) {	
+	console.log('loadBabyNameData:'+ parentDivIDs[0] + ", " + parentDivIDs[1] + ", " + path);
+	
 	d3.csv(path,function(error,data) {
 		if (error) {
 			throw error;
 		}
 		babyNameData=data;
-		bindBabyNamesToDOM(data,parentDivID);
-		generateBabyBubbleChart(data,parentDivID);
+		bindBabyNamesToDOM(data,parentDivIDs[0]);
+		if (parentDivIDs.length >1) {
+			generateBabyBubbleChart(data,parentDivIDs[1]);	
+		}
 	});
 }
 
 function generateBabyBubbleChart(babyData,parentDivID) {
-	if (parentDivID!=="divAllBabyNames") {
+	if (parentDivID!=="divAllBabyNames" && parentDivID!=="divBabyBubbleChart") {
 		return;
 	}
 	babyData.sort(function(a,b) {
@@ -63,10 +67,10 @@ function generateBabyBubbleChart(babyData,parentDivID) {
 		}
 	});
 	
-	var chart = bubbleChart().width(960).height(960).minRadius(7).maxRadius(55).forceApart(-170);
+	chart = bubbleChart().width(960).height(960).minRadius(7).maxRadius(55).forceApart(-170);
 	chart.columnForColors("Sex").columnForRadius("BirthCount").unitName("babies").columnForTitle("Name");
 	chart.customColors(["M","F"],["#70b7f0","#e76486"]).showTitleOnCircle(true);
-	console.log(chart.showTitleOnCircle());
+	chart.title('Most popular baby names in ' + $("#selYear").val());
 	d3.select("#"+parentDivID)
 		.data(newData)
 		.call(chart);
@@ -122,10 +126,21 @@ function bindBabyNamesToDOM(babyData,parentDivID) {
 }
 
 function removeBabyNamesFromDOM(parentDivID) {
-	d3.select("#"+parentDivID)
-		.selectAll("ul").remove();
+	var list=d3.select("#"+parentDivID).selectAll("ol");
+	list.remove();
+}
+
+function removeBabyChart(parentDivID) {
 	var svg=d3.select("#"+parentDivID).select("svg");
-	svg.selectAll("g").remove();
+	
+	/* need this so our callback onYearChangeAfterRemoving
+	 * only actually does anything after the last parent div has been
+	 * updated
+	 */
+	currentlyRemovedElement=parentDivID; 
+	chart.remove();
+
+	svg.selectAll("text").remove();
 }
 
 function loadYearsData() {
@@ -138,7 +153,7 @@ function loadYearsData() {
 			return d3.descending(a.Year,b.Year);
 		});
 		
-		var containingDiv=d3.selectAll("body").insert("div",":nth-child(2)");
+		var containingDiv=d3.select("#divYearSelect").insert("div");
 		containingDiv.text("Show popularity of birth name on ");
 		var select=containingDiv.insert("select");
 		select.attr("id","selYear");
@@ -153,11 +168,12 @@ function loadYearsData() {
 			return d.Year;
 		});
 		addSelectHandler();
+		yearSelect=$("selYear");
 	});
 }
 
 function addSelectHandler() {
-	var yearSelect = $("#selYear");
+	yearSelect = $("#selYear");
 
 	yearSelect.change(function() {
 		onYearChange();
@@ -166,12 +182,21 @@ function addSelectHandler() {
 }
 
 function onYearChange() {
+	onYearChangeNotGeneric();
+	return;
+
+}
+
+function onYearChangeGeneric() {
 	console.log("onYearChange(): ");
 	console.log(parentDivInfo);
 	var generationInfo=[];
 	var yearSelect = $("#selYear");
 	var selID;
 	parentDivInfo.forEach(function(d) {
+		if (d.id==="divTaylorsBabyNames") {
+			return;
+		}
 		removeBabyNamesFromDOM(d.id);
 		if (!d.selRelated) {
 			generationInfo.push({
@@ -188,7 +213,36 @@ function onYearChange() {
 		}
 	});
 	parentDivInfo=generationInfo;
-	console.log(parentDivInfo);
+	//console.log(parentDivInfo);
+	genMultipleBabyNameLists(parentDivInfo);
+}
+
+function onYearChangeNotGeneric() {
+	console.log("onYearChangeNotGeneric(): ");
+	//console.log(parentDivInfo);
+	yearSelect = $("#selYear");
+
+	removeBabyNamesFromDOM("divAllBabyNames");
+	removeBabyChart("divBabyBubbleChart");
+	
+	setTimeout(onYearChangeAfterRemoving,550);
+}
+
+function onYearChangeAfterRemoving() {
+	yearSelect = $("#selYear");
+	//console.log("onYearChangeAfterRemoving: " +currentlyRemovedElement);
+	/*if (currentlyRemovedElement!=="divBabyBubbleChart") {
+		return;
+	}*/
+	var generationInfo=[];
+	generationInfo.push({
+		id:["divAllBabyNames","divBabyBubbleChart"],
+		path:"data/names/yob"+yearSelect.val()+".txt",
+		selRelated:true
+	});
+	
+	parentDivInfo=generationInfo;
+	//console.log(parentDivInfo);	
 	genMultipleBabyNameLists(parentDivInfo);
 }
 
