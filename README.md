@@ -1,3 +1,4 @@
+[![](babyNamesScreenshot.png)](https://taylorchasewhite.github.io/babyNames/)
 ## Members
 
 <dl>
@@ -5,6 +6,8 @@
 <dd><p>Using data from the US Social Security Administration, this file will generate an SVG
 bubble chart that displays the frequency of the occurrence of that name in a given year.
 The data goes from 1880-Present (2016) as of Summer 2017.</p>
+
+Check out the live example [here](https://taylorchasewhite.github.io/babyNames/).
 </dd>
 </dl>
 
