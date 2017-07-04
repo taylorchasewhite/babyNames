@@ -3,12 +3,18 @@
 * Source: 
 *	https://bl.ocks.org/dmesquita/37d8efdb3d854db8469af4679b8f984a
 *	https://medium.freecodecamp.org/a-gentle-introduction-to-d3-how-to-build-a-reusable-bubble-chart-9106dc4f6c46
-* Modified by: Taylor White
+* Modified by: Taylor White whitetc2@gmail.com
 * Modified on: July 2, 2017
 * Purpose:
 * 	Generate a reusable bubble chart
 */
 
+
+/**
+ * Instantiate the settings before rendering the bubble chart
+ * 
+ * @returns Chart function so that you can render the chart when ready
+ */
 function bubbleChart() {
 	var width = 960,
 	height = 960,
@@ -27,6 +33,11 @@ function bubbleChart() {
 	chartSVG,
 	showTitleOnCircle=false;
 
+	/**
+	 * The command to actually render the chart after setting the settings.
+	 * 
+	 * @param {string} selection - The div ID that you want to render in 
+	 */
 	function chart(selection) {
 		var data = selection.enter().data();
 		chartSelection=selection;
@@ -151,6 +162,12 @@ function bubbleChart() {
 			.text(title);
 	}
 
+	/**
+	 * 
+	 * 
+	 * @param {number} [value] - The width of the chart 
+	 * @returns function - Chart, allowing chaining of commands
+	 */
 	chart.width = function(value) {
 		if (!arguments.length) {
 			return width;
@@ -159,6 +176,12 @@ function bubbleChart() {
 		return chart;
 	};
 
+	/**
+	 * Get/set the height of the chart
+	 * 
+	 * @param {number} [value] - The height of the chart
+	 * @returns function - Chart, allowing chaining of commands
+	 */
 	chart.height = function(value) {
 		if (!arguments.length) {
 			return height;
@@ -169,6 +192,12 @@ function bubbleChart() {
 	};
 
 
+	/**
+	 * Get/set the property used to determine the colors of the bubbles
+	 * 
+	 * @param {string} [value] - Property name to bind the bubble color to.
+	 * @returns function - Chart, allowing chaining of commands
+	 */
 	chart.columnForColors = function(value) {
 		if (!arguments.length) {
 			return columnForColors;
@@ -177,6 +206,12 @@ function bubbleChart() {
 		return chart;
 	};
 	
+	/**
+	 * Get/set the property to determine the titles of the bubbles
+	 * 
+	 * @param {string} [value] - Property name to bind the bubble title to.
+	 * @returns function - Chart, allowing chaining of commands
+	 */
 	chart.columnForTitle = function(value) {
 		if (!arguments.length) {
 			return columnForTitle;
@@ -185,6 +220,12 @@ function bubbleChart() {
 		return chart;
 	};
 
+	/**
+	 * Get/set the property to determine the radii of the bubbles
+	 * 
+	 * @param {string} [value] - Property name to bind the bubble radius to. Requires a numerical property.
+	 * @returns function - Chart, allowing chaining of commands
+	 */
 	chart.columnForRadius = function(value) {
 		if (!arguments.length) {
 			return columnForRadius;
@@ -193,6 +234,12 @@ function bubbleChart() {
 		return chart;
 	};
 	
+	/**
+	 * Get/set the minimum radius of the bubbles
+	 * 
+	 * @param {number} [value] - The minimum radius for the width of the bubbles
+	 * @returns function - Chart, allowing chaining of commands
+	 */
 	chart.minRadius = function(value) {
 		if (!arguments.length) {
 			return minRadius;
@@ -201,6 +248,12 @@ function bubbleChart() {
 		return chart;
 	};
 	
+	/**
+	 * Get/set the maximum radius of the bubbles
+	 * 
+	 * @param {number} [value] - The maximum radius of the bubbles for the largest value in the dataset
+	 * @returns function - Chart, allowing chaining of commands
+	 */
 	chart.maxRadius = function(value) {
 		if (!arguments.length) {
 			return maxRadius;
@@ -209,6 +262,13 @@ function bubbleChart() {
 		return chart;
 	};
 	
+	/**
+	 * Get/set the unit name for the property the is represented by the radius of the bubbles. 
+	 * Used in the tooltip of the bubbles
+	 * 
+	 * @param {any} [value] - The unit name to display on the tooltip when hovering over a bubble
+	 * @returns function - Chart, allowing chaining of commands
+	 */
 	chart.unitName = function(value) {
 		if (!arguments.length) {
 			return unitName;
@@ -217,6 +277,12 @@ function bubbleChart() {
 		return chart;
 	};
 	
+	/**
+	 * Get/set the force the separates and pushes together the bubbles on loading of the chart
+	 * 
+	 * @param {any} [value] - Determines the force to separate the bubbles from each other when loading the chart
+	 * @returns function - Chart, allowing chaining of commands
+	 */
 	chart.forceApart = function(value) {
 		if (!arguments.length) {
 			return forceApart;
@@ -225,6 +291,12 @@ function bubbleChart() {
 		return chart;
 	};
 	
+	/**
+	 * Get/set the property that determines if we show or hide the title of the data on the bubbles
+	 * 
+	 * @param {boolean} [value] - Determines whether to show or hide the title of the data on the bubbles
+	 * @returns function - Chart, allowing chaining of commands
+	 */
 	chart.showTitleOnCircle = function(value) {
 		if (!arguments.length) {
 			return showTitleOnCircle;
@@ -233,6 +305,14 @@ function bubbleChart() {
 		return chart;
 	};
 	
+	/**
+	 * Set the domain and range of the colors used for the bubbles. This is only needed if you want to use custom colors in the chart.
+	 * 
+	 * @param {any[]} domain - The domain. This is the set of categories used for binding the colors.
+	 * @param {string[]} range - The range. This is an array of color codes that you want to represent each category in the domain.
+	 * 							Example: ["#70b7f0","#e76486"]. Note: The length of the array must perfectly match the length of the domain array.
+	 * @returns function - Chart, allowing chaining of commands
+	 */
 	chart.customColors = function(domain,range) {
 		customColors=true;
 		customDomain=domain;
@@ -240,6 +320,12 @@ function bubbleChart() {
 		return chart;
 	};
 	
+	/**
+	 * Get/set the property that determines the title of the chart
+	 * 
+	 * @param {string} value - The title of the chart
+	 * @returns function - Chart, allowing chaining of commands
+	 */
 	chart.title = function(value) {
 		if (!arguments.length) {
 			return title;
@@ -248,6 +334,12 @@ function bubbleChart() {
 		return chart;
 	}
 	
+	/**
+	 * Animate the removal of data from the chart (and the title)
+	 * 
+	 * @param {function} [callback] - At the end of each node animation call this function for each node
+	 * @returns function - Chart, allowing chaining of commands
+	 */
 	chart.remove = function(callback) {
 		chartSVG.selectAll("text")
 		.style("opacity",1)

@@ -1,4 +1,14 @@
-
+/**
+ * Using data from the US Social Security Administration, this file will generate an SVG
+ * bubble chart that displays the frequency of the occurrence of that name in a given year.
+ * The data goes from 1880-Present (2016) as of Summer 2017.
+ * 
+ * @author Taylor White <whitetc2@gmail.com>
+ * @since  07.04.17
+ * @summary   Generate a bubble chart showing frequency of US names by year.
+ * @requires d3.v4.js
+ * @requires jquery
+ */
 /*
 	Global vars
 */
@@ -9,10 +19,12 @@ var yearSelect;
 /**
  * Generates the DOM elements into specified DIVs from specified datasets.
  * @public
- * @param {array} generationData - Array of JSON data structured like so:
- *									{id:["divBabyNames"],path:"/data/1880.txt",selRelated:true}
- * 									used to indicate which divs to generate into and 
- * 									where to pull the data from
+ * @param {Object} generationData - Array of JSON data structured like so:
+ * @param {string[]} generationData.id - An array of div IDs indicating where to render content
+ * 										[0] - The div ID to contain the ordered list
+ * 										[1] - The div ID to containt the bubble chart
+ * @param {string} generationData.path - Path to the file with data to load
+ * @param {string} generationData.selRelated - Indicates if this dataset should be relaoded when changing years
  */
 function babyNamesInitialize(generationData) {
 	loadYearsData();
@@ -23,10 +35,12 @@ function babyNamesInitialize(generationData) {
 /**
  * Generate baby name lists for multiple 
  * @public
- * @param {array} generationData - Array of JSON data structured like so:
- *									{id:["divBabyNames"],path:"/data/1880.txt",selRelated:true}
- * 									used to indicate which divs to generate into and 
- * 									where to pull the data from 
+ * @param {Object} generationData - Array of JSON data structured like so:
+ * @param {string[]} generationData.id - An array of div IDs indicating where to render content
+ * 										[0] - The div ID to contain the ordered list
+ * 										[1] - The div ID to containt the bubble chart
+ * @param {string} generationData.path - Path to the file with data to load
+ * @param {string} generationData.selRelated - Indicates if this dataset should be relaoded when changing years
  */
 function genMultipleBabyNameLists(generationData) {
 	generationData.forEach(function(d) {
@@ -37,7 +51,7 @@ function genMultipleBabyNameLists(generationData) {
 /**
  * Generates a list and bubble chart of baby names into the DOM
  * @public
- * @param {array} elementIDs - An array of html element IDs (length of 2)
+ * @param {string[]} elementIDs - An array of html element IDs (length of 2)
  * 								[0] - The div ID to contain the ordered list
  * 								[1] - The div ID to containt the bubble chart
  * @param {string} path - The path to the SSA csv data for a given year
@@ -63,7 +77,7 @@ function genBabyNameList(elementIDs,path) {
 /**
  * Loads the baby name data into an array of JSONs from a filepath
  * @private
- * @param {array} elementIDs - An array of html element IDs (length of 2)
+ * @param {string[]} elementIDs - An array of html element IDs (length of 2)
  * 								[0] - The div ID to contain the ordered list
  * 								[1] - The div ID to containt the bubble chart
  * @param {string} path - The path to the SSA csv data for a given year
@@ -86,7 +100,10 @@ function loadBabyNameData(parentDivIDs,path) {
 /**
  * Generates the D3 SVG to display and renders the bubble chart
  * @public
- * @param {array} babyData - An array of JSONs representing the baby data
+ * @param {Object[]} babyData - An array of JSONs representing the baby data
+ * @param {Object} babyData[].Name - Name of the child being born
+ * @param {Object} babyData[].Sex - The sex of the baby born (can be M/F).
+ * @param {Object} babyData[].BirthCount - The number of babies born thtat year
  * @param {string} parentDivID - The div to containt the chart
  */
 function generateBabyBubbleChart(babyData,parentDivID) {
@@ -120,8 +137,10 @@ function generateBabyBubbleChart(babyData,parentDivID) {
 /**
  * Generates the D3 ordered list from the data.
  * @public
- * @param {array} babyData - The array of JSON data structured like so:
- * 							[{Name:"Taylor",Sex:"M",BirthCount:10000},...]
+ * @param {Object[]} babyData - The array of JSON data containing names, their sex and frequency
+ * @param {Object} babyData[].Name - Name of the child being born
+ * @param {Object} babyData[].Sex - The sex of the baby born (can be M/F).
+ * @param {Object} babyData[].BirthCount - The number of babies born thtat year
  * @param {string} parentDivID - The div to render the ordered list into.
  */
 function bindBabyNamesToDOM(babyData,parentDivID) {
@@ -199,8 +218,8 @@ function removeBabyChart(parentDivID) {
 }
 
 /**
- * @private
  * Generates a select element with values from all of the years available
+ * @private
  */
 function loadYearsData() {
 	d3.tsv("./data/years.tsv",function (error,data) {
@@ -245,20 +264,18 @@ function addSelectHandler() {
 }
 
 /**
- * @private
  * Remove the current data in the nodes on the DOM and 
  * re-render them based on the new year selected
- * 
+ * @private
  */
 function onYearChange() {
 	onYearChangeNotGeneric();
 }
 
 /**
- * @private
  * Remove the current data in the nodes on the DOM and 
  * re-render them based on the new year selected 
- * 
+ * @private
  */
 function onYearChangeNotGeneric() {
 	//console.log("onYearChangeNotGeneric(): ");
@@ -273,6 +290,7 @@ function onYearChangeNotGeneric() {
 
 /**
  * Reload data from the new path after changing the year select
+ * @private
  */
 function onYearChangeAfterRemoving() {
 	yearSelect = $("#selYear");
@@ -292,8 +310,10 @@ function onYearChangeAfterRemoving() {
 /**
  * Get the name of the CSS class given the sex of the baby name data
  * @private
- * @param {JSON} d - JSON representing baby data structured like:
- * 						{Name:"Taylor",Sex:"F",BirthCount:1000}
+ * @param {Object} d - JSON representing baby data structured like:
+ * @param {Object} d.Name - Name of the child being born
+ * @param {Object} d.Sex - The sex of the baby born (can be M/F).
+ * @param {Object} d.BirthCount - The number of babies born thtat year
  * @returns {string} - The mapped CSS class based on the sex of the name
  */
 function getSexClass(d) {
