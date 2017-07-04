@@ -139,8 +139,6 @@ function removeBabyChart(parentDivID) {
 	 */
 	currentlyRemovedElement=parentDivID; 
 	chart.remove();
-
-	svg.selectAll("text").remove();
 }
 
 function loadYearsData() {

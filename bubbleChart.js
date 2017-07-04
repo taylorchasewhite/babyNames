@@ -249,8 +249,14 @@ function bubbleChart() {
 	}
 	
 	chart.remove = function(callback) {
-		if (!arguments.length) {
-			chartSVG.selectAll("text")
+		chartSVG.selectAll("text")
+		.style("opacity",1)
+		.transition()
+		.duration(500)
+		.style("opacity", "0")
+		.remove();	
+		if (!arguments.length) {	
+			chartSVG.selectAll("g")
 			.style("opacity",1)
 			.transition()
 			.duration(500)
