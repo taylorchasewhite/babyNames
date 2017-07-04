@@ -35,12 +35,6 @@ function bubbleChart() {
 		svg.attr('width', width).attr('height', height);
 		chartSVG=svg;
 
-	svg.append('text')
-		.attr('x',width/2).attr('y',marginTop)
-		.attr("text-anchor", "middle")
-		.attr("font-size","1.8em")
-		.text(title);
-
 		var tooltip = selection
 		.append("div")
 		.style("position", "absolute")
@@ -149,6 +143,12 @@ function bubbleChart() {
 				return tooltip.style("visibility", "hidden");
 			});
 		}
+
+		svg.append('text')
+			.attr('x',width/2).attr('y',marginTop)
+			.attr("text-anchor", "middle")
+			.attr("font-size","1.8em")
+			.text(title);
 	}
 
 	chart.width = function(value) {
