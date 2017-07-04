@@ -35,7 +35,7 @@ function bubbleChart() {
 
 	/**
 	 * The command to actually render the chart after setting the settings.
-	 * 
+	 * @public
 	 * @param {string} selection - The div ID that you want to render in 
 	 */
 	function chart(selection) {

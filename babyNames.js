@@ -5,7 +5,7 @@
  * 
  * @author Taylor White <whitetc2@gmail.com>
  * @since  07.04.17
- * @summary   Generate a bubble chart showing frequency of US names by year.
+ * @summary  Generate a bubble chart showing frequency of US names by year.
  * @requires d3.v4.js
  * @requires jquery
  */
