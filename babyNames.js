@@ -1,21 +1,47 @@
+
 /*
 	Global vars
 */
 var chart,babyNameData,parentDivInfo,currentlyRemovedElement;
 var yearSelect;
 
+
+/**
+ * Generates the DOM elements into specified DIVs from specified datasets.
+ * @public
+ * @param {array} generationData - Array of JSON data structured like so:
+ *									{id:["divBabyNames"],path:"/data/1880.txt",selRelated:true}
+ * 									used to indicate which divs to generate into and 
+ * 									where to pull the data from
+ */
 function babyNamesInitialize(generationData) {
 	loadYearsData();
 	parentDivInfo=generationData;
 	genMultipleBabyNameLists(parentDivInfo);
 }
 
+/**
+ * Generate baby name lists for multiple 
+ * @public
+ * @param {array} generationData - Array of JSON data structured like so:
+ *									{id:["divBabyNames"],path:"/data/1880.txt",selRelated:true}
+ * 									used to indicate which divs to generate into and 
+ * 									where to pull the data from 
+ */
 function genMultipleBabyNameLists(generationData) {
 	generationData.forEach(function(d) {
 		genBabyNameList(d.id,d.path);
 	});
 }
 
+/**
+ * Generates a list and bubble chart of baby names into the DOM
+ * @public
+ * @param {array} elementIDs - An array of html element IDs (length of 2)
+ * 								[0] - The div ID to contain the ordered list
+ * 								[1] - The div ID to containt the bubble chart
+ * @param {string} path - The path to the SSA csv data for a given year
+ */
 function genBabyNameList(elementIDs,path) {
 	var parentDivIDs;
 	
@@ -34,6 +60,14 @@ function genBabyNameList(elementIDs,path) {
 	loadBabyNameData(parentDivIDs,path);
 }
 
+/**
+ * Loads the baby name data into an array of JSONs from a filepath
+ * @private
+ * @param {array} elementIDs - An array of html element IDs (length of 2)
+ * 								[0] - The div ID to contain the ordered list
+ * 								[1] - The div ID to containt the bubble chart
+ * @param {string} path - The path to the SSA csv data for a given year
+ */
 function loadBabyNameData(parentDivIDs,path) {	
 	console.log('loadBabyNameData:'+ parentDivIDs[0] + ", " + parentDivIDs[1] + ", " + path);
 	
@@ -49,6 +83,12 @@ function loadBabyNameData(parentDivIDs,path) {
 	});
 }
 
+/**
+ * Generates the D3 SVG to display and renders the bubble chart
+ * @public
+ * @param {array} babyData - An array of JSONs representing the baby data
+ * @param {string} parentDivID - The div to containt the chart
+ */
 function generateBabyBubbleChart(babyData,parentDivID) {
 	if (parentDivID!=="divAllBabyNames" && parentDivID!=="divBabyBubbleChart") {
 		return;
@@ -77,6 +117,13 @@ function generateBabyBubbleChart(babyData,parentDivID) {
 	return;
 }
 
+/**
+ * Generates the D3 ordered list from the data.
+ * @public
+ * @param {array} babyData - The array of JSON data structured like so:
+ * 							[{Name:"Taylor",Sex:"M",BirthCount:10000},...]
+ * @param {string} parentDivID - The div to render the ordered list into.
+ */
 function bindBabyNamesToDOM(babyData,parentDivID) {
 	if(!babyData) {
 		babyData=babyNameData;
@@ -125,11 +172,21 @@ function bindBabyNamesToDOM(babyData,parentDivID) {
 	});
 }
 
+/**
+ * Remove the list of names from the DOM
+ * @public
+ * @param {string} parentDivID 
+ */
 function removeBabyNamesFromDOM(parentDivID) {
 	var list=d3.select("#"+parentDivID).selectAll("ol");
 	list.remove();
 }
 
+/**
+ * Remove the bubble chart containing the data regarding names for a year
+ * @public
+ * @param {string} parentDivID - HTML element ID to remove data from
+ */
 function removeBabyChart(parentDivID) {
 	var svg=d3.select("#"+parentDivID).select("svg");
 	
@@ -141,6 +198,10 @@ function removeBabyChart(parentDivID) {
 	chart.remove();
 }
 
+/**
+ * @private
+ * Generates a select element with values from all of the years available
+ */
 function loadYearsData() {
 	d3.tsv("./data/years.tsv",function (error,data) {
 		if (error) {
@@ -170,6 +231,10 @@ function loadYearsData() {
 	});
 }
 
+/**
+ * Set the handler to be called when the year selection element changes
+ * @private
+ */
 function addSelectHandler() {
 	yearSelect = $("#selYear");
 
@@ -179,44 +244,24 @@ function addSelectHandler() {
 	
 }
 
+/**
+ * @private
+ * Remove the current data in the nodes on the DOM and 
+ * re-render them based on the new year selected
+ * 
+ */
 function onYearChange() {
 	onYearChangeNotGeneric();
-	return;
-
 }
 
-function onYearChangeGeneric() {
-	console.log("onYearChange(): ");
-	console.log(parentDivInfo);
-	var generationInfo=[];
-	var yearSelect = $("#selYear");
-	var selID;
-	parentDivInfo.forEach(function(d) {
-		if (d.id==="divTaylorsBabyNames") {
-			return;
-		}
-		removeBabyNamesFromDOM(d.id);
-		if (!d.selRelated) {
-			generationInfo.push({
-				id:d.id,
-				selRelated:false
-			});
-		}
-		else {
-			generationInfo.push({
-				id:d.id,
-				path:"data/names/yob"+yearSelect.val()+".txt",
-				selRelated:true
-			});
-		}
-	});
-	parentDivInfo=generationInfo;
-	//console.log(parentDivInfo);
-	genMultipleBabyNameLists(parentDivInfo);
-}
-
+/**
+ * @private
+ * Remove the current data in the nodes on the DOM and 
+ * re-render them based on the new year selected 
+ * 
+ */
 function onYearChangeNotGeneric() {
-	console.log("onYearChangeNotGeneric(): ");
+	//console.log("onYearChangeNotGeneric(): ");
 	//console.log(parentDivInfo);
 	yearSelect = $("#selYear");
 
@@ -226,12 +271,12 @@ function onYearChangeNotGeneric() {
 	setTimeout(onYearChangeAfterRemoving,550);
 }
 
+/**
+ * Reload data from the new path after changing the year select
+ */
 function onYearChangeAfterRemoving() {
 	yearSelect = $("#selYear");
-	//console.log("onYearChangeAfterRemoving: " +currentlyRemovedElement);
-	/*if (currentlyRemovedElement!=="divBabyBubbleChart") {
-		return;
-	}*/
+
 	var generationInfo=[];
 	generationInfo.push({
 		id:["divAllBabyNames","divBabyBubbleChart"],
@@ -244,6 +289,13 @@ function onYearChangeAfterRemoving() {
 	genMultipleBabyNameLists(parentDivInfo);
 }
 
+/**
+ * Get the name of the CSS class given the sex of the baby name data
+ * @private
+ * @param {JSON} d - JSON representing baby data structured like:
+ * 						{Name:"Taylor",Sex:"F",BirthCount:1000}
+ * @returns {string} - The mapped CSS class based on the sex of the name
+ */
 function getSexClass(d) {
 	if (d.Sex==="Girl" || d.Sex==="F") {
 		return "girl";
