@@ -221,9 +221,10 @@ function getReturnString(maleNameResults,femaleNameResults,sizeOfSet) {
 	if (maleNameResults.length > 1 || femaleNameResults.length >1) {
 		if (maleNameResults.length > 1) {
 			returnString += "<li class=\"boy\">For boys, " + maleNameResults[1].Name;
-			returnString += " was the " + maleNameResults[0].sexAhead + " most popular name of ";
+			returnString += " was the " + getSexAheadString(maleNameResults[0].sexAhead) + " most popular name of ";
 			returnString += maleNameResults[0].sexCount + " total names of ";
-			returnString += getSexClass(maleNameResults[1]) + " babies born.</li>";
+			returnString += getSexClass(maleNameResults[1]) + " babies born.";
+			returnString += "<br/>There were " + maleNameResults[1].BirthCount + " boy  babies named " + maleNameResults[1].Name + " born.</li>";
 		}
 		else {
 			returnString +="<li class=\"boy\">Of the " + maleNameResults[0].sexCount + " baby boys born, none of them were named " + femaleNameResults[1].Name + "!</li>";
@@ -232,12 +233,13 @@ function getReturnString(maleNameResults,femaleNameResults,sizeOfSet) {
 		if (femaleNameResults.length > 1) {
 			returnString += "<br/><br/><li class=\"girl\">"
 			returnString += "For girls, " + femaleNameResults[1].Name;
-			returnString += " was the " + femaleNameResults[0].sexAhead + " most popular name of ";
+			returnString += " was the " + getSexAheadString(femaleNameResults[0].sexAhead) + " most popular name of ";
 			returnString += femaleNameResults[0].sexCount + " total names of ";
-			returnString += getSexClass(femaleNameResults[1]) + " babies born.</li>";
+			returnString += getSexClass(femaleNameResults[1]) + " babies born."
+			returnString += "<br/>There were " + femaleNameResults[1].BirthCount + " girl babies named " + femaleNameResults[1].Name + " born.</li>";
 		}
 		else {
-			returnString +="<li class=\"girl\">Of the " + femaleNameResults[0].sexCount + " baby girls born, none of them were named " + maleNameResults[1].Name + "!</li>";
+			returnString +="<br/><br/><li class=\"girl\">Of the " + femaleNameResults[0].sexCount + " baby girls born, none of them were named " + maleNameResults[1].Name + "!</li>";
 		}
 	}
 	else {
@@ -245,6 +247,34 @@ function getReturnString(maleNameResults,femaleNameResults,sizeOfSet) {
 	}
 	returnString +='</ul>';
 	return returnString;
+}
+
+/**
+ * Add the ordinal suffix to numbers greater than zero, otherwise return empty string
+ * 
+ * @param {any} birthCount - number of babies born
+ * @returns - The ordinal suffix of a number
+ */
+function getSexAheadString(birthCount) {
+	var sexAheadString="";
+	function ordinal_suffix_of(i) {
+		var j = i % 10,
+			k = i % 100;
+		if (j == 1 && k != 11) {
+			return i + "st";
+		}
+		if (j == 2 && k != 12) {
+			return i + "nd";
+		}
+		if (j == 3 && k != 13) {
+			return i + "rd";
+		}
+		return i + "th";
+	}
+	if (birthCount>0) {
+		sexAheadString=ordinal_suffix_of(birthCount);
+	}
+	return sexAheadString;
 }
 
 /**
