@@ -99,6 +99,155 @@ function loadBabyNameData(parentDivIDs,path) {
 }
 
 /**
+ * Initialize HTML elements needed to trigger searches
+ * @public
+ * 
+ * @param {Object} generationData - Array of JSON data structured like so:
+ * @param {string[]} generationData.id - An array of div IDs indicating where to render content
+ * 										[0] - The div ID to contain the ordered list
+ * 										[1] - The div ID to containt the bubble chart
+ * @param {string} generationData.path - Path to the file with data to load
+ * @param {string} generationData.searchTerm - The term we are to search for
+ */
+function babyNameSearchInitialize(generationData) {
+	loadYearsData();
+	parentDivInfo=generationData;
+	addSearchHandlers();
+}
+
+/**
+ * Pull the relavent information needed to search from the DOM and initiate a search
+ * @private
+ */
+function searchForBabyName() {
+	var searchTerm = $("#searchInput").val();
+	var path=getPathFromYear();
+	var parentDivIDs=parentDivInfo.id;
+	searchBabyNameData(parentDivIDs,path,searchTerm);
+}
+
+/**
+ * Extract the data from the specified path and call searchThroughBabyData
+ * @private
+ * 
+ * @param {any} parentDivIDs - The parent divs to populate search results with
+ * @param {any} path - The path containing the year data
+ * @param {any} searchTerm - The search term entered by the user
+ */
+function searchBabyNameData(parentDivIDs,path,searchTerm) {	
+	//console.log('searchBabyNameData:'+ parentDivIDs[0] + ", " + parentDivIDs[1] + ", " + path + ", " + searchTerm);
+	
+	d3.csv(path,function(error,data) {
+		if (error) {
+			throw error;
+		}
+		babyNameData=data;
+		searchThroughBabyData(data,parentDivIDs[0],searchTerm);
+	});
+}
+
+/**
+ * Searches over the SSA data for a given year based on the params passed in.
+ * @private
+ * 
+ * @param {Object[]} babyData - The array of JSON data containing names, their sex and frequency
+ * @param {Object} babyData[].Name - Name of the child being born
+ * @param {Object} babyData[].Sex - The sex of the baby born (can be M/F).
+ * @param {Object} babyData[].BirthCount - The number of babies born thtat year
+ * @param {string} parentDivID - The div to render the ordered list into.
+ * @param {string} searchTerm - The search string entered in by the user
+ */
+function searchThroughBabyData(babyData,parentDivID,searchTerm) {
+	if(!babyData) {
+		babyData=babyNameData;
+	}
+	var haveCounts,sizeOfSet,list;
+	/*var rscale = d3.scaleLinear()*/
+	
+	var sizeOfSet=babyData.length;
+	
+	babyData.sort(function(a,b) {
+		if (a.hasOwnProperty("BirthCount")) {
+			haveCounts=true;
+			return b.BirthCount-a.BirthCount;
+		}
+		else {
+			return d3.ascending(a.Name,b.Name);				
+		}
+	});
+
+	list=d3.select("#"+parentDivID).append("ol");
+	
+	var maleName= [{sexAhead:0,sexCount:0}],femaleName = [{sexAhead:0,sexCount:0}];
+	babyData.forEach(function(d,i) {
+		switch (d.Sex) {
+			case 'F': femaleName[0].sexCount++; break;
+			case 'M': maleName[0].sexCount++; break;
+		}
+		if (d.Name === searchTerm) {
+			if (d.Sex==='F') {
+				femaleName.push(d);
+			} 
+			else {
+				maleName.push(d);
+			}
+		}
+		if (!femaleName[1] && d.Sex==='F') {
+			femaleName[0].sexAhead++;
+		}
+		if (!maleName[1] && d.Sex==='M') {
+			maleName[0].sexAhead++;
+		}	
+	});
+	d3.select("#"+parentDivID)
+		.append("div")
+		.html(function() {
+			return getReturnString(maleName,femaleName,sizeOfSet);
+		});
+}
+
+
+/**
+ * Return back a friendly string that details how popular a given name was for both boys and girls
+ * 
+ * @param {Object[]} maleNameResults - Contains the search result data for males born in a given year
+ * @param {Object[]} femaleNameResults - Contains the search result data for females born in a given year
+ * @param {number} sizeOfSet - The total size of the number of names born in a given year
+ * @returns 
+ */
+function getReturnString(maleNameResults,femaleNameResults,sizeOfSet) {
+	var returnString;
+	returnString = "In " + $("#selYear").val() + "...<br/><br/><ul>";
+	if (maleNameResults.length > 1 || femaleNameResults.length >1) {
+		if (maleNameResults.length > 1) {
+			returnString += "<li class=\"boy\">For boys, " + maleNameResults[1].Name;
+			returnString += " was the " + maleNameResults[0].sexAhead + " most popular name of ";
+			returnString += maleNameResults[0].sexCount + " total names of ";
+			returnString += getSexClass(maleNameResults[1]) + " babies born.</li>";
+		}
+		else {
+			returnString +="<li class=\"boy\">Of the " + maleNameResults[0].sexCount + " baby boys born, none of them were named " + femaleNameResults[1].Name + "!</li>";
+		}
+		
+		if (femaleNameResults.length > 1) {
+			returnString += "<br/><br/><li class=\"girl\">"
+			returnString += "For girls, " + femaleNameResults[1].Name;
+			returnString += " was the " + femaleNameResults[0].sexAhead + " most popular name of ";
+			returnString += femaleNameResults[0].sexCount + " total names of ";
+			returnString += getSexClass(femaleNameResults[1]) + " babies born.</li>";
+		}
+		else {
+			returnString +="<li class=\"girl\">Of the " + femaleNameResults[0].sexCount + " baby girls born, none of them were named " + maleNameResults[1].Name + "!</li>";
+		}
+	}
+	else {
+		returnString+="<li>There were no babies born by that name!</li>";
+	}
+	returnString +='</ul>';
+	return returnString;
+}
+
+/**
  * Generates the D3 SVG to display and renders the bubble chart
  * @public
  * @param {Object[]} babyData - An array of JSONs representing the baby data
@@ -236,6 +385,7 @@ function loadYearsData() {
 		containingDiv.text("Show popularity of birth name on ");
 		var select=containingDiv.insert("select");
 		select.attr("id","selYear");
+		//select.attr("class","select_style");
 		select.selectAll('option')
 		.data(data)
 		.enter()
@@ -248,6 +398,23 @@ function loadYearsData() {
 		});
 		addSelectHandler();
 		yearSelect=$("selYear");
+	});
+}
+
+function addSearchHandlers() {
+	yearSelect = $("#selYear");
+	yearSelect.change(searchForBabyName);
+	var searchBtn = $("#btnSearch").click(function() {
+		searchForBabyName();
+	});
+	$('#searchInput').bind("enterKey",function(e){
+		searchForBabyName();
+	});
+	$('#searchInput').keyup(function(e){
+		if(e.keyCode == 13)
+		{
+			$(this).trigger("enterKey");
+		}
 	});
 }
 
@@ -299,13 +466,25 @@ function onYearChangeAfterRemoving() {
 	var generationInfo=[];
 	generationInfo.push({
 		id:["divAllBabyNames","divBabyBubbleChart"],
-		path:"data/names/yob"+yearSelect.val()+".txt",
+		path:getPathFromYear(),
 		selRelated:true
 	});
 	
 	parentDivInfo=generationInfo;
 	//console.log(parentDivInfo);	
 	genMultipleBabyNameLists(parentDivInfo);
+}
+
+function getPathFromYear() {
+	var year;
+	if (!yearSelect) {
+		yearSelect = $("#selYear");
+	}
+	year =yearSelect.val();
+	if (!year) {
+		year = 2016;
+	}
+	return "data/names/yob"+year+".txt";
 }
 
 /**

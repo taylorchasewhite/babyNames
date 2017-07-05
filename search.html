@@ -1,0 +1,28 @@
+<html lang="en-US">
+	<head>
+	    <meta charset="UTF-8">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+		<script src="https://d3js.org/d3.v4.min.js" type="text/javascript"></script>
+		<script src="./bubbleChart.js" type="text/javascript"></script>
+		<script src="./babyNames.js" type="text/javascript"></script>
+		<link rel="stylesheet" type="text/css" href="./babyNames.css">
+		<link rel="stylesheet" type="text/css" href="http://taylorchasewhite.com/css/shared.css">
+		<link rel="stylesheet" type="text/css" href="http://taylorchasewhite.com/css/buttons.css">
+		<link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet">
+	</head>
+	<body>
+		<div id="divSearch">How popular was <input type="text" id="searchInput" placeholder="Taylor"></input>?
+			<button type="button" id="btnSearch" class="btn btnBlue">Search!</button>
+		</div>
+		<div id="divYearSelect"></div>
+		<div class="notes">Data on name frequency can be found at the Social Security Administration's Open Data <a href="https://www.ssa.gov/open/data/">website</a>.</div>
+		<div id="divSearchResults"></div>
+		<div id="divBabyBubbleChart" class="divCenter">
+			<svg></svg>			
+		</div>
+		<script>
+			babyNameSearchInitialize(
+				{id:["divSearchResults","divBabyBubbleChart"],searchTerm:"enter baby name",path:"data/names/yob2016.txt"}
+			);
+		</script>
+	</body>
