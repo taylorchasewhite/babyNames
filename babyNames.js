@@ -177,11 +177,17 @@ function searchThroughBabyData(babyData,parentDivID,searchTerm) {
 			return d3.ascending(a.Name,b.Name);				
 		}
 	});	
-	var maleName= [{sexAhead:0,sexCount:0}],femaleName = [{sexAhead:0,sexCount:0}];
+	var maleName= [{sexAhead:0,sexCount:0,totalCount:0}],femaleName = [{sexAhead:0,sexCount:0,totalCount:0}];
 	babyData.forEach(function(d,i) {
 		switch (d.Sex) {
-			case 'F': femaleName[0].sexCount++; break;
-			case 'M': maleName[0].sexCount++; break;
+			case 'F': 
+				femaleName[0].sexCount++; 
+				femaleName[0].totalCount+=+d.BirthCount;
+				break;
+			case 'M': 
+				maleName[0].sexCount++; 
+				maleName[0].totalCount+=+d.BirthCount;
+				break;
 		}
 		if (d.Name === searchTerm) {
 			if (d.Sex==='F') {
@@ -216,29 +222,37 @@ function searchThroughBabyData(babyData,parentDivID,searchTerm) {
  */
 function getReturnString(maleNameResults,femaleNameResults,sizeOfSet) {
 	var returnString;
+	var percentPopulation;
 	returnString = "In " + $("#selYear").val() + "...<br/><br/><ul>";
 	if (maleNameResults.length > 1 || femaleNameResults.length >1) {
 		if (maleNameResults.length > 1) {
+			percentPopulation = (maleNameResults[1].BirthCount/maleNameResults[0].totalCount*100).toFixed(4) + "%";
 			returnString += "<li class=\"boy\">For boys, " + maleNameResults[1].Name;
 			returnString += " was the " + getSexAheadString(maleNameResults[0].sexAhead) + " most popular name of ";
-			returnString += maleNameResults[0].sexCount + " total names of ";
+			returnString += (+maleNameResults[0].sexCount).toLocaleString() + " total names of ";
 			returnString += getSexClass(maleNameResults[1]) + " babies born.";
-			returnString += "<br/>There were " + maleNameResults[1].BirthCount + " boy  babies named " + maleNameResults[1].Name + " born.</li>";
+			returnString += "<br/>There were " + (+maleNameResults[1].BirthCount).toLocaleString() + " boy babies named " + maleNameResults[1].Name + " born and ";
+			returnString += (+maleNameResults[0].totalCount).toLocaleString() + " total boy babies born.";
+			returnString += " (That's " + percentPopulation + " of the boy babies born.)"  + "</li>";
 		}
 		else {
-			returnString +="<li class=\"boy\">Of the " + maleNameResults[0].sexCount + " baby boys born, none of them were named " + femaleNameResults[1].Name + "!</li>";
+			returnString +="<li class=\"boy\">Of the " + (+maleNameResults[0].totalCount).toLocaleString() + " baby boys born, none of them were named " + femaleNameResults[1].Name + "!</li>";
 		}
 		
 		if (femaleNameResults.length > 1) {
+			percentPopulation = (femaleNameResults[1].BirthCount/femaleNameResults[0].totalCount*100).toFixed(4) + "%";
 			returnString += "<br/><br/><li class=\"girl\">"
 			returnString += "For girls, " + femaleNameResults[1].Name;
 			returnString += " was the " + getSexAheadString(femaleNameResults[0].sexAhead) + " most popular name of ";
-			returnString += femaleNameResults[0].sexCount + " total names of ";
+			returnString += (+femaleNameResults[0].sexCount).toLocaleString() + " total names of ";
 			returnString += getSexClass(femaleNameResults[1]) + " babies born."
-			returnString += "<br/>There were " + femaleNameResults[1].BirthCount + " girl babies named " + femaleNameResults[1].Name + " born.</li>";
+			returnString += "<br/>There were " + (+femaleNameResults[1].BirthCount).toLocaleString() + " girl babies named " + femaleNameResults[1].Name + " born. and ";
+			returnString += (+femaleNameResults[0].totalCount).toLocaleString() + " total girl babies born.";
+			returnString += " (That's " + percentPopulation + " of the girl babies born.)" + "</li>";
+
 		}
 		else {
-			returnString +="<br/><br/><li class=\"girl\">Of the " + femaleNameResults[0].sexCount + " baby girls born, none of them were named " + maleNameResults[1].Name + "!</li>";
+			returnString +="<br/><br/><li class=\"girl\">Of the " + (+femaleNameResults[0].totalCount).toLocaleString() + " baby girls born, none of them were named " + maleNameResults[1].Name + "!</li>";
 		}
 	}
 	else {
@@ -260,15 +274,15 @@ function getSexAheadString(birthCount) {
 		var j = i % 10,
 			k = i % 100;
 		if (j == 1 && k != 11) {
-			return i + "st";
+			return i.toLocaleString() + "st";
 		}
 		if (j == 2 && k != 12) {
-			return i + "nd";
+			return i.toLocaleString() + "nd";
 		}
 		if (j == 3 && k != 13) {
-			return i + "rd";
+			return i.toLocaleString() + "rd";
 		}
-		return i + "th";
+		return i.toLocaleString() + "th";
 	}
 	if (birthCount>0) {
 		sexAheadString=ordinal_suffix_of(birthCount);
