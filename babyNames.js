@@ -112,6 +112,7 @@ function loadBabyNameData(parentDivIDs,path) {
 function babyNameSearchInitialize(generationData) {
 	loadYearsData('search');
 	parentDivInfo=generationData;
+	$("#searchInput").val("Taylor");
 	addSearchHandlers();
 }
 
@@ -439,6 +440,10 @@ function loadYearsData(context) {
 	});
 }
 
+/**
+ * Set the handlers to run based off of user events in the DOM
+ * @private
+ */
 function addSearchHandlers() {
 	var searchBtn = $("#btnSearch").click(function() {
 		searchForBabyName();
