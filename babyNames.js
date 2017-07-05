@@ -110,7 +110,7 @@ function loadBabyNameData(parentDivIDs,path) {
  * @param {string} generationData.searchTerm - The term we are to search for
  */
 function babyNameSearchInitialize(generationData) {
-	loadYearsData();
+	loadYearsData('search');
 	parentDivInfo=generationData;
 	addSearchHandlers();
 }
@@ -123,6 +123,7 @@ function searchForBabyName() {
 	var searchTerm = $("#searchInput").val();
 	var path=getPathFromYear();
 	var parentDivIDs=parentDivInfo.id;
+	removeSearchResultsFromDOM(parentDivIDs[0]);
 	searchBabyNameData(parentDivIDs,path,searchTerm);
 }
 
@@ -174,10 +175,7 @@ function searchThroughBabyData(babyData,parentDivID,searchTerm) {
 		else {
 			return d3.ascending(a.Name,b.Name);				
 		}
-	});
-
-	list=d3.select("#"+parentDivID).append("ol");
-	
+	});	
 	var maleName= [{sexAhead:0,sexCount:0}],femaleName = [{sexAhead:0,sexCount:0}];
 	babyData.forEach(function(d,i) {
 		switch (d.Sex) {
@@ -398,10 +396,20 @@ function removeBabyChart(parentDivID) {
 }
 
 /**
+ * Remove the list of names from the DOM
+ * @public
+ * @param {string} parentDivID 
+ */
+function removeSearchResultsFromDOM(parentDivID) {
+	var list=d3.select("#"+parentDivID).selectAll("div");
+	list.remove();
+}
+
+/**
  * Generates a select element with values from all of the years available
  * @private
  */
-function loadYearsData() {
+function loadYearsData(context) {
 	d3.tsv("./data/years.tsv",function (error,data) {
 		if (error) {
 			throw error;
@@ -426,14 +434,12 @@ function loadYearsData() {
 		.attr('value',function(d) {
 			return d.Year;
 		});
-		addSelectHandler();
+		addSelectHandler(context);
 		yearSelect=$("selYear");
 	});
 }
 
 function addSearchHandlers() {
-	yearSelect = $("#selYear");
-	yearSelect.change(searchForBabyName);
 	var searchBtn = $("#btnSearch").click(function() {
 		searchForBabyName();
 	});
@@ -451,12 +457,24 @@ function addSearchHandlers() {
 /**
  * Set the handler to be called when the year selection element changes
  * @private
+ * 
+ * @param {string} [context='bubble'] - What do we want to bind our change event to?
  */
-function addSelectHandler() {
+function addSelectHandler(context) {
 	yearSelect = $("#selYear");
 
 	yearSelect.change(function() {
-		onYearChange();
+		switch(context) {
+			case 'bubble':
+				onYearChange();
+				break;
+			case 'search':
+				searchForBabyName();
+				break;
+			default:
+				onYearChange();
+				break;
+		}
 	});
 	
 }
@@ -507,9 +525,7 @@ function onYearChangeAfterRemoving() {
 
 function getPathFromYear() {
 	var year;
-	if (!yearSelect) {
-		yearSelect = $("#selYear");
-	}
+	yearSelect = $("#selYear");
 	year =yearSelect.val();
 	if (!year) {
 		year = 2016;
