@@ -23,6 +23,15 @@ Check out the live example [here](https://taylorchasewhite.github.io/babyNames/)
 <dt><a href="#genBabyNameList">genBabyNameList(elementIDs, path)</a></dt>
 <dd><p>Generates a list and bubble chart of baby names into the DOM</p>
 </dd>
+<dt><a href="#babyNameSearchInitialize">babyNameSearchInitialize(generationData)</a></dt>
+<dd><p>Initialize HTML elements needed to trigger searches</p>
+</dd>
+<dt><a href="#getReturnString">getReturnString(maleNameResults, femaleNameResults, sizeOfSet)</a> ⇒</dt>
+<dd><p>Return back a friendly string that details how popular a given name was for both boys and girls</p>
+</dd>
+<dt><a href="#getSexAheadString">getSexAheadString(birthCount)</a> ⇒</dt>
+<dd><p>Add the ordinal suffix to numbers greater than zero, otherwise return empty string</p>
+</dd>
 <dt><a href="#generateBabyBubbleChart">generateBabyBubbleChart(babyData, parentDivID)</a></dt>
 <dd><p>Generates the D3 SVG to display and renders the bubble chart</p>
 </dd>
@@ -91,6 +100,47 @@ Generates a list and bubble chart of baby names into the DOM
 | --- | --- | --- |
 | elementIDs | <code>Array.&lt;string&gt;</code> | An array of html element IDs (length of 2) 								[0] - The div ID to contain the ordered list 								[1] - The div ID to containt the bubble chart |
 | path | <code>string</code> | The path to the SSA csv data for a given year |
+
+<a name="babyNameSearchInitialize"></a>
+
+## babyNameSearchInitialize(generationData)
+Initialize HTML elements needed to trigger searches
+
+**Kind**: global function  
+**Access**: public  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| generationData | <code>Object</code> | Array of JSON data structured like so: |
+| generationData.id | <code>Array.&lt;string&gt;</code> | An array of div IDs indicating where to render content 							[0] - The div ID to contain the ordered list 										[1] - The div ID to containt the bubble chart |
+| generationData.path | <code>string</code> | Path to the file with data to load |
+| generationData.searchTerm | <code>string</code> | The term we are to search for |
+
+<a name="getReturnString"></a>
+
+## getReturnString(maleNameResults, femaleNameResults, sizeOfSet) ⇒
+Return back a friendly string that details how popular a given name was for both boys and girls
+
+**Kind**: global function  
+**Returns**: string - A nicely formatted string detailing the popularity of a name  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| maleNameResults | <code>Array.&lt;Object&gt;</code> | Contains the search result data for males born in a given year |
+| femaleNameResults | <code>Array.&lt;Object&gt;</code> | Contains the search result data for females born in a given year |
+| sizeOfSet | <code>number</code> | The total size of the number of names born in a given year |
+
+<a name="getSexAheadString"></a>
+
+## getSexAheadString(birthCount) ⇒
+Add the ordinal suffix to numbers greater than zero, otherwise return empty string
+
+**Kind**: global function  
+**Returns**: - The ordinal suffix of a number  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| birthCount | <code>any</code> | number of babies born |
 
 <a name="generateBabyBubbleChart"></a>
 
