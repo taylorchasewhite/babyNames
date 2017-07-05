@@ -1,4 +1,5 @@
 [![](babyNamesScreenshot.png)](https://taylorchasewhite.github.io/babyNames/)
+[![](searchScreenshot.png)](https://taylorchasewhite.github.io/babyNames/)
 ## Members
 
 <dl>
