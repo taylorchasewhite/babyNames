@@ -213,7 +213,7 @@ function searchThroughBabyData(babyData,parentDivID,searchTerm) {
  * @param {Object[]} maleNameResults - Contains the search result data for males born in a given year
  * @param {Object[]} femaleNameResults - Contains the search result data for females born in a given year
  * @param {number} sizeOfSet - The total size of the number of names born in a given year
- * @returns 
+ * @returns string - A nicely formatted string detailing the popularity of a name
  */
 function getReturnString(maleNameResults,femaleNameResults,sizeOfSet) {
 	var returnString;
