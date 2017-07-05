@@ -344,7 +344,7 @@ function bindBabyNamesToDOM(babyData,parentDivID) {
 	var list;
 	if (haveCounts) {
 		list=d3.select("#"+parentDivID).append("ol");
-		while (babyData.length > 3000) {
+		while (babyData.length > 1000) {
 			babyData.pop();
 		}
 	}
