@@ -184,8 +184,8 @@ function bubbleChart() {
 	}
 
 
-	//chart.width = chartWidth;
-	//chart.height = chartHeight;
+	chart.width = chartWidth;
+	chart.height = chartHeight;
 	chart.columnForColors = chartColForColors;
 	chart.columnForRadius = chartColForRadius;
 	chart.columnForTitle = chartColForTitle;
