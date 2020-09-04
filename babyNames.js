@@ -28,7 +28,7 @@ var yearSelect;
  * @param {string} generationData.selRelated - Indicates if this dataset should be relaoded when changing years
  */
 function babyNamesInitialize(generationData) {
-	loadYearsData(undefined,generationData.path);
+	loadYearsData(undefined,generationData[1].path);
 	parentDivInfo=generationData;
 	genMultipleBabyNameLists(parentDivInfo);
 }
