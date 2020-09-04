@@ -317,7 +317,7 @@ function generateBabyBubbleChart(babyData,parentDivID) {
 		}
 	});
 	
-	chart = bubbleChart().width("100%").height("auto").minRadius(7).maxRadius(55).forceApart(-170);
+	chart = bubbleChart().width("850").height("850").minRadius(7).maxRadius(55).forceApart(-170);
 	chart.columnForColors("Sex").columnForRadius("BirthCount").unitName("babies").columnForTitle("Name");
 	chart.customColors(["M","F"],["#70b7f0","#e76486"]).showTitleOnCircle(true);
 	chart.title('Most popular baby names in ' + $("#selYear").val());
