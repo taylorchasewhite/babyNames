@@ -77,7 +77,7 @@ function bubbleChart() {
 		.style("border-radius", "6px")
 		.style("text-align", "center")
 		.style("font-family", "monospace")
-		.style("width", "400px")
+		.style("width", "30%")
 		.text("");
 
 
