@@ -64,7 +64,7 @@ function bubbleChart() {
 		chartSelection=selection;
 		var div = selection,
 		svg = div.selectAll('svg');
-		svg.attr('width', "100%").attr('height', "auto");
+		svg.attr('width', "100%");
 		chartSVG=svg;
 
 		var tooltip = selection
