@@ -28,7 +28,7 @@ var yearSelect;
  * @param {string} generationData.selRelated - Indicates if this dataset should be relaoded when changing years
  */
 function babyNamesInitialize(generationData) {
-	loadYearsData();
+	loadYearsData(undefined,generationData.path);
 	parentDivInfo=generationData;
 	genMultipleBabyNameLists(parentDivInfo);
 }
@@ -424,8 +424,14 @@ function removeSearchResultsFromDOM(parentDivID) {
  * Generates a select element with values from all of the years available
  * @private
  */
-function loadYearsData(context) {
-	d3.tsv("./data/years.tsv",function (error,data) {
+function loadYearsData(context, path) {
+	if(!path) {
+		path="./data/years.tsv";
+	}
+	else {
+		path=path.substring(0,path.indexOf("data/")+5) + "years.tsv";
+	}
+	d3.tsv(path,function (error,data) {
 		if (error) {
 			throw error;
 		}
