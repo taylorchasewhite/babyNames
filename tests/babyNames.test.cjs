@@ -89,7 +89,9 @@ test("year paths use the selected year and the entry point's relative data root"
 test("a late search response cannot overwrite the newest result", () => {
     const app = loadApp();
     const callbacks = [];
-    app.context.d3.csv = (url, callback) => callbacks.push(callback);
+    const urls = [];
+    app.context.dataRevision = "?v=test-release";
+    app.context.d3.csv = (url, callback) => { urls.push(url); callbacks.push(callback); };
     const rendered = [];
     app.context.searchThroughBabyData = (rows, parent, term) => rendered.push(term);
     app.context.searchBabyNameData(["results"], "data/names/yob2024.txt", "Mary");
@@ -97,4 +99,8 @@ test("a late search response cannot overwrite the newest result", () => {
     callbacks[1](null, []);
     callbacks[0](null, []);
     assert.deepEqual(rendered, ["Liam"]);
+    assert.deepEqual(urls, [
+        "data/names/yob2024.txt?v=test-release",
+        "data/names/yob2025.txt?v=test-release",
+    ]);
 });

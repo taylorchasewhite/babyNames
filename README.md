@@ -35,6 +35,10 @@ adds the CSV header expected by D3, regenerates the year manifest, and records
 the source URL, retrieval date, coverage, and archive SHA-256 in `data/source.json`.
 Original row order and the repository's header-LF/row-CRLF format are preserved.
 No runtime request to SSA is needed; GitHub Pages serves the imported files.
+The importer also versions script URLs with the archive checksum. Data requests
+reuse that revision so returning visitors do not mix new code with cached older
+year manifests or counts. When updating an existing blog embed, version its
+iframe URL too (for example, `search.html?v=2026-11-25`).
 
 For browser checks, serve this directory over HTTP (for example,
 `python -m http.server 8000 --bind 127.0.0.1`) and open `/`, `/search.html`, and

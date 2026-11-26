@@ -61,6 +61,16 @@ def import_archive(archive, retrieved):
     }
     (root / "data/source.json").write_text(
         json.dumps(metadata, indent=2) + "\n", encoding="ascii", newline="\n")
+    revision = metadata["archiveSha256"][:12]
+    for page in ("index.html", "search.html", "chart/index.html"):
+        file = root / page
+        content = file.read_bytes()
+        content = re.sub(
+            rb'((?:babyNames|bubbleChart)\.js)(?:\?v=[^"]*)?"',
+            lambda match: match[1] + b"?v=" + revision.encode("ascii") + b'"',
+            content,
+        )
+        file.write_bytes(content)
     print(f"Imported {len(years)} complete years: {years[0]}-{years[-1]}.")
 
 

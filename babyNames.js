@@ -18,6 +18,8 @@ var yearSelect;
 var dataRoot = "./data/";
 var pendingLoads = {};
 var yearChangeTimer;
+var dataRevision = typeof document !== "undefined" && document.currentScript
+	? new URL(document.currentScript.src).search : "";
 
 function showDataError(error) {
 	console.error("Baby names:", error);
@@ -100,7 +102,7 @@ function loadBabyNameData(parentDivIDs,path) {
 	var request = (pendingLoads[parentDivIDs[0]] || 0) + 1;
 	pendingLoads[parentDivIDs[0]] = request;
 	
-	d3.csv(path,function(error,data) {
+	d3.csv(path + dataRevision,function(error,data) {
 		if (pendingLoads[parentDivIDs[0]] !== request) return;
 		if (parentDivIDs.length > 1 && path !== getPathFromYear()) return;
 		if (error) {
@@ -170,7 +172,7 @@ function searchBabyNameData(parentDivIDs,path,searchTerm) {
 	
 	var request = (pendingLoads[parentDivIDs[0]] || 0) + 1;
 	pendingLoads[parentDivIDs[0]] = request;
-	d3.csv(path,function(error,data) {
+	d3.csv(path + dataRevision,function(error,data) {
 		if (pendingLoads[parentDivIDs[0]] !== request) return;
 		if (error) {
 			showDataError(error);
@@ -461,7 +463,7 @@ function loadYearsData(context, path, ready) {
 	if(!path) {
 		path="./data/years.tsv";
 	}
-	d3.tsv(path,function (error,data) {
+	d3.tsv(path + dataRevision,function (error,data) {
 		if (error) {
 			showDataError(error);
 			return;
