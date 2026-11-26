@@ -14,7 +14,7 @@ Florence,F,4424
 Lillian,F,4367
 Rose,F,4151
 Ethel,F,4141
-Evelyn,F,4075
+Evelyn,F,4076
 Edna,F,3957
 Gladys,F,3933
 Louise,F,3725
@@ -1819,7 +1819,6 @@ Conception,F,8
 Corena,F,8
 Cuba,F,8
 Dawn,F,8
-Debbie,F,8
 Dellar,F,8
 Dellie,F,8
 Delora,F,8
@@ -2014,6 +2013,7 @@ Dahlia,F,7
 Dallie,F,7
 Dasie,F,7
 Davie,F,7
+Debbie,F,7
 Dela,F,7
 Dellia,F,7
 Doloris,F,7
@@ -2869,14 +2869,14 @@ Zilphia,F,5
 Zina,F,5
 John,M,13446
 William,M,10593
-James,M,9951
+James,M,9952
 George,M,6586
 Robert,M,6526
 Joseph,M,6488
 Charles,M,5725
 Frank,M,4314
 Edward,M,4164
-Thomas,M,3293
+Thomas,M,3292
 Henry,M,3167
 Walter,M,3074
 Harry,M,2538
@@ -2889,7 +2889,7 @@ Raymond,M,2088
 Richard,M,2030
 Louis,M,1838
 Fred,M,1808
-Clarence,M,1774
+Clarence,M,1775
 Ralph,M,1674
 Jack,M,1668
 Carl,M,1574
@@ -2906,10 +2906,10 @@ Donald,M,1275
 Lawrence,M,1221
 Michael,M,1159
 Alfred,M,1158
-Kenneth,M,1149
+Kenneth,M,1148
 Herbert,M,1125
 Andrew,M,1098
-Eugene,M,1058
+Eugene,M,1060
 Stanley,M,997
 Charlie,M,978
 Leonard,M,953
@@ -2958,7 +2958,7 @@ Gerald,M,462
 Alvin,M,460
 Johnnie,M,455
 Harvey,M,446
-Sidney,M,433
+Sidney,M,432
 Irving,M,431
 Alexander,M,426
 Homer,M,419
@@ -3065,10 +3065,10 @@ Karl,M,156
 Owen,M,156
 Bruce,M,155
 Forrest,M,152
-Juan,M,152
 Julian,M,152
 Perry,M,152
 Tommie,M,152
+Juan,M,151
 Dale,M,150
 Johnny,M,147
 Ervin,M,144

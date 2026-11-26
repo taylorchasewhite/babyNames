@@ -1,12 +1,53 @@
 [![](babyNamesScreenshot.png)](https://taylorchasewhite.github.io/babyNames/)
 [![](searchScreenshot.png)](https://taylorchasewhite.github.io/babyNames/search.html)
+
+## November 25, 2026 data refresh
+
+The chart and checker now cover **1880-2025**, using the complete official
+[SSA national archive](https://www.ssa.gov/oact/babynames/names.zip)
+downloaded November 25, 2026. **2025 is the latest available birth year**;
+2026 birth counts are not yet available. All historical files were refreshed
+from the same release, including SSA's revisions to earlier years.
+
+Both tools select the newest year from `data/years.tsv` after it loads, rather
+than hardcoding a year. The list displays the top 1,000 name/sex entries; the
+bubble chart shows entries with at least 30% of the most popular name's count.
+The checker searches the complete published year file, including rare names.
+Ranks start at 1 within each sex and ties are ordered alphabetically.
+
+SSA excludes names with fewer than five occurrences and does not cover every
+U.S. birth. A missing name is not proof of zero births. Percentages use the
+total counts in the public file, not all births. See
+[SSA's limitations](https://www.ssa.gov/oact/babynames/limits.html) and the
+included `data/names/NationalReadMe.pdf`.
+
+### Refreshing the data
+
+Download `names.zip` from SSA's National data link, then run:
+
+```powershell
+python scripts\import_ssa.py C:\Downloads\names.zip --retrieved YYYY-MM-DD
+node --test tests\babyNames.test.cjs
+```
+
+The dependency-free importer validates every record and year before writing,
+adds the CSV header expected by D3, regenerates the year manifest, and records
+the source URL, retrieval date, coverage, and archive SHA-256 in `data/source.json`.
+Original row order and the repository's header-LF/row-CRLF format are preserved.
+No runtime request to SSA is needed; GitHub Pages serves the imported files.
+
+For browser checks, serve this directory over HTTP (for example,
+`python -m http.server 8000 --bind 127.0.0.1`) and open `/`, `/search.html`, and
+`/chart/`. Confirm the newest year loads, switch to 1880 and back, and search
+for Liam, Olivia, Taylor, and a missing name.
+
 ## Members
 
 <dl>
 <dt><a href="#babyNameData">babyNameData</a></dt>
 <dd><p>Using data from the US Social Security Administration, this file will generate an SVG
 bubble chart that displays the frequency of the occurrence of that name in a given year.
-The data goes from 1880-Present (2016) as of Summer 2017.</p>
+Available years and the default year come from the imported SSA year manifest.</p>
 
 Check out the live example [here](https://taylorchasewhite.github.io/babyNames/).
 </dd>
@@ -52,7 +93,7 @@ Check out the live example [here](https://taylorchasewhite.github.io/babyNames/)
 ## babyNameData
 Using data from the US Social Security Administration, this file will generate an SVG
 bubble chart that displays the frequency of the occurrence of that name in a given year.
-The data goes from 1880-Present (2016) as of Summer 2017.
+Available years and the default year come from the imported SSA year manifest.
 
 **Kind**: global variable  
 **Summary**: Generate a bubble chart showing frequency of US names by year.  

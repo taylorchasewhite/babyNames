@@ -1,5 +1,5 @@
 Name,Sex,BirthCount
-Mary,F,18666
+Mary,F,18665
 Helen,F,8439
 Margaret,F,6976
 Ruth,F,6180
@@ -65,7 +65,7 @@ Marion,F,1349
 Lena,F,1331
 Eleanor,F,1302
 Carrie,F,1239
-Stella,F,1215
+Stella,F,1216
 Vera,F,1204
 Blanche,F,1162
 Doris,F,1155
@@ -115,7 +115,7 @@ Wilma,F,630
 Lola,F,623
 Lucile,F,592
 Lottie,F,580
-Marian,F,579
+Marian,F,578
 Juanita,F,572
 Loretta,F,566
 Mable,F,566
@@ -130,7 +130,7 @@ Nettie,F,543
 Goldie,F,538
 Jane,F,531
 Katie,F,531
-Kathleen,F,526
+Kathleen,F,527
 Sophie,F,523
 May,F,515
 Barbara,F,514
@@ -954,7 +954,6 @@ Ether,F,18
 Eveline,F,18
 Floretta,F,18
 Isla,F,18
-Laurie,F,18
 Lynn,F,18
 Margarete,F,18
 Marianna,F,18
@@ -986,6 +985,7 @@ Jessica,F,17
 Jossie,F,17
 Launa,F,17
 Laurette,F,17
+Laurie,F,17
 Leda,F,17
 Leoma,F,17
 Libbie,F,17
@@ -2433,8 +2433,8 @@ Zela,F,5
 Zephyr,F,5
 Zetha,F,5
 Zylpha,F,5
-John,M,9342
-William,M,7528
+John,M,9343
+William,M,7529
 James,M,7012
 George,M,4584
 Robert,M,4219
@@ -2462,7 +2462,7 @@ Roy,M,1097
 Jack,M,1086
 Howard,M,1078
 Carl,M,1074
-David,M,1016
+David,M,1015
 Ernest,M,1000
 Earl,M,999
 Samuel,M,960
@@ -2476,7 +2476,7 @@ Kenneth,M,692
 Anthony,M,690
 Elmer,M,689
 Eugene,M,689
-Michael,M,689
+Michael,M,688
 Donald,M,664
 Sam,M,644
 Theodore,M,643
@@ -2485,7 +2485,7 @@ Leo,M,584
 Herman,M,562
 Lee,M,553
 Stanley,M,547
-Peter,M,542
+Peter,M,541
 Daniel,M,530
 Floyd,M,529
 Leroy,M,523
@@ -2499,7 +2499,7 @@ Benjamin,M,480
 Edwin,M,477
 Oscar,M,476
 Chester,M,461
-Ray,M,447
+Ray,M,446
 Frederick,M,438
 Claude,M,428
 Bernard,M,414
@@ -2911,7 +2911,6 @@ Bertram,M,27
 Bruno,M,27
 Bryan,M,27
 Elzie,M,27
-Gary,M,27
 General,M,27
 Junior,M,27
 Linwood,M,27
@@ -2924,6 +2923,7 @@ Rodney,M,27
 Rosevelt,M,27
 Arlie,M,26
 Clint,M,26
+Gary,M,26
 Granville,M,26
 Gregory,M,26
 Haywood,M,26

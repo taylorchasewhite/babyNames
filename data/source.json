@@ -1,0 +1,10 @@
+{
+  "source": "https://www.ssa.gov/oact/babynames/names.zip",
+  "documentation": "https://www.ssa.gov/oact/babynames/limits.html",
+  "retrieved": "2026-11-25",
+  "archiveSha256": "cd78e975ed7bb358e018dd62fbe14ced89295e9581c49172ca4eedcb011b3724",
+  "firstYear": 1880,
+  "latestYear": 2025,
+  "yearCount": 146,
+  "transformation": "Original SSA rows with Name,Sex,BirthCount header; existing header-LF/row-CRLF format preserved."
+}

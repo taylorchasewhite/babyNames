@@ -1502,7 +1502,7 @@ Benjamin,M,760
 David,M,757
 Ernest,M,736
 Richard,M,711
-Joe,M,708
+Joe,M,709
 Willie,M,708
 Carl,M,704
 Earl,M,688
@@ -1512,7 +1512,7 @@ Jesse,M,576
 Oscar,M,572
 Andrew,M,561
 Elmer,M,557
-Paul,M,556
+Paul,M,555
 Daniel,M,515
 Raymond,M,511
 Howard,M,503
@@ -2096,7 +2096,6 @@ Pablo,M,11
 Pierce,M,11
 Price,M,11
 Raphael,M,11
-Ronald,M,11
 Rose,M,11
 Rupert,M,11
 Russel,M,11
@@ -2141,6 +2140,7 @@ Ola,M,10
 Orange,M,10
 Pierre,M,10
 Quincy,M,10
+Ronald,M,10
 Rowland,M,10
 Seymour,M,10
 Sullivan,M,10

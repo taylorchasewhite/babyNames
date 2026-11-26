@@ -1,7 +1,7 @@
 /**
  * Using data from the US Social Security Administration, this file will generate an SVG
  * bubble chart that displays the frequency of the occurrence of that name in a given year.
- * The data goes from 1880-Present (2016) as of Summer 2017.
+ * Available years and the default year come from the imported SSA year manifest.
  * 
  * @author Taylor White <whitetc2@gmail.com>
  * @since  07.04.17
@@ -15,6 +15,14 @@
 */
 var babyNameData,chart,parentDivInfo,currentlyRemovedElement;
 var yearSelect;
+var dataRoot = "./data/";
+var pendingLoads = {};
+var yearChangeTimer;
+
+function showDataError(error) {
+	console.error("Baby names:", error);
+	$("#dataStatus").text("Unable to load name data. Please reload and try again.");
+}
 
 
 /**
@@ -28,9 +36,14 @@ var yearSelect;
  * @param {string} generationData.selRelated - Indicates if this dataset should be relaoded when changing years
  */
 function babyNamesInitialize(generationData) {
-	loadYearsData(undefined,generationData[1].path);
 	parentDivInfo=generationData;
-	genMultipleBabyNameLists(parentDivInfo);
+	dataRoot = generationData[1].path;
+	loadYearsData('bubble', dataRoot + "years.tsv", function() {
+		generationData.forEach(function(item) {
+			item.path = item.selRelated ? getPathFromYear() : dataRoot + "babyNames.csv";
+		});
+		genMultipleBabyNameLists(generationData);
+	});
 }
 
 /**
@@ -84,12 +97,17 @@ function genBabyNameList(elementIDs,path) {
  * @param {string} path - The path to the SSA csv data for a given year
  */
 function loadBabyNameData(parentDivIDs,path) {	
-	console.log('loadBabyNameData:'+ parentDivIDs[0] + ", " + parentDivIDs[1] + ", " + path);
+	var request = (pendingLoads[parentDivIDs[0]] || 0) + 1;
+	pendingLoads[parentDivIDs[0]] = request;
 	
 	d3.csv(path,function(error,data) {
+		if (pendingLoads[parentDivIDs[0]] !== request) return;
+		if (parentDivIDs.length > 1 && path !== getPathFromYear()) return;
 		if (error) {
-			throw error;
+			showDataError(error);
+			return;
 		}
+		removeBabyNamesFromDOM(parentDivIDs[0]);
 		babyNameData=data;
 		bindBabyNamesToDOM(data,parentDivIDs[0]);
 		if (parentDivIDs.length >1) {
@@ -110,9 +128,14 @@ function loadBabyNameData(parentDivIDs,path) {
  * @param {string} generationData.searchTerm - The term we are to search for
  */
 function babyNameSearchInitialize(generationData) {
-	loadYearsData('search');
 	parentDivInfo=generationData;
+	dataRoot = generationData.path;
 	$("#searchInput").val("Taylor");
+	$("#btnSearch").prop("disabled", true);
+	loadYearsData('search', dataRoot + "years.tsv", function() {
+		$("#btnSearch").prop("disabled", false);
+		searchForBabyName();
+	});
 	addSearchHandlers();
 }
 
@@ -121,7 +144,13 @@ function babyNameSearchInitialize(generationData) {
  * @private
  */
 function searchForBabyName() {
-	var searchTerm = $("#searchInput").val();
+	if (!$("#selYear").val()) return;
+	pendingLoads[parentDivInfo.id[0]] = (pendingLoads[parentDivInfo.id[0]] || 0) + 1;
+	var searchTerm = $("#searchInput").val().trim();
+	if (!searchTerm) {
+		$("#divSearchResults").text("Enter a name to search.");
+		return;
+	}
 	var path=getPathFromYear();
 	var parentDivIDs=parentDivInfo.id;
 	removeSearchResultsFromDOM(parentDivIDs[0]);
@@ -139,9 +168,13 @@ function searchForBabyName() {
 function searchBabyNameData(parentDivIDs,path,searchTerm) {	
 	//console.log('searchBabyNameData:'+ parentDivIDs[0] + ", " + parentDivIDs[1] + ", " + path + ", " + searchTerm);
 	
+	var request = (pendingLoads[parentDivIDs[0]] || 0) + 1;
+	pendingLoads[parentDivIDs[0]] = request;
 	d3.csv(path,function(error,data) {
+		if (pendingLoads[parentDivIDs[0]] !== request) return;
 		if (error) {
-			throw error;
+			showDataError(error);
+			return;
 		}
 		babyNameData=data;
 		searchThroughBabyData(data,parentDivIDs[0],searchTerm);
@@ -171,7 +204,7 @@ function searchThroughBabyData(babyData,parentDivID,searchTerm) {
 	babyData.sort(function(a,b) {
 		if (a.hasOwnProperty("BirthCount")) {
 			haveCounts=true;
-			return b.BirthCount-a.BirthCount;
+			return b.BirthCount-a.BirthCount || d3.ascending(a.Name,b.Name);
 		}
 		else {
 			return d3.ascending(a.Name,b.Name);				
@@ -189,7 +222,7 @@ function searchThroughBabyData(babyData,parentDivID,searchTerm) {
 				maleName[0].totalCount+=+d.BirthCount;
 				break;
 		}
-		if (d.Name === searchTerm) {
+		if (d.Name.toLowerCase() === searchTerm.toLowerCase()) {
 			if (d.Sex==='F') {
 				femaleName.push(d);
 			} 
@@ -228,35 +261,35 @@ function getReturnString(maleNameResults,femaleNameResults,sizeOfSet) {
 		if (maleNameResults.length > 1) {
 			percentPopulation = (maleNameResults[1].BirthCount/maleNameResults[0].totalCount*100).toFixed(4) + "%";
 			returnString += "<li class=\"boy\">For boys, " + maleNameResults[1].Name;
-			returnString += " was the " + getSexAheadString(maleNameResults[0].sexAhead) + " most popular name of ";
+			returnString += " was the " + getSexAheadString(maleNameResults[0].sexAhead + 1) + " most popular name of ";
 			returnString += (+maleNameResults[0].sexCount).toLocaleString() + " total names of ";
 			returnString += getSexClass(maleNameResults[1]) + " babies born.";
 			returnString += "<br/>There were " + (+maleNameResults[1].BirthCount).toLocaleString() + " boy babies named " + maleNameResults[1].Name + " born and ";
-			returnString += (+maleNameResults[0].totalCount).toLocaleString() + " total boy babies born.";
-			returnString += " (That's " + percentPopulation + " of the boy babies born.)"  + "</li>";
+			returnString += (+maleNameResults[0].totalCount).toLocaleString() + " boys represented in this public dataset.";
+			returnString += " (That's " + percentPopulation + " of the recorded boys.)"  + "</li>";
 		}
 		else {
-			returnString +="<li class=\"boy\">Of the " + (+maleNameResults[0].totalCount).toLocaleString() + " baby boys born, none of them were named " + femaleNameResults[1].Name + "!</li>";
+			returnString +="<li class=\"boy\">No public SSA record for boys named " + femaleNameResults[1].Name + " in this year. Names with fewer than five occurrences are suppressed.</li>";
 		}
 		
 		if (femaleNameResults.length > 1) {
 			percentPopulation = (femaleNameResults[1].BirthCount/femaleNameResults[0].totalCount*100).toFixed(4) + "%";
 			returnString += "<br/><br/><li class=\"girl\">"
 			returnString += "For girls, " + femaleNameResults[1].Name;
-			returnString += " was the " + getSexAheadString(femaleNameResults[0].sexAhead) + " most popular name of ";
+			returnString += " was the " + getSexAheadString(femaleNameResults[0].sexAhead + 1) + " most popular name of ";
 			returnString += (+femaleNameResults[0].sexCount).toLocaleString() + " total names of ";
 			returnString += getSexClass(femaleNameResults[1]) + " babies born."
-			returnString += "<br/>There were " + (+femaleNameResults[1].BirthCount).toLocaleString() + " girl babies named " + femaleNameResults[1].Name + " born. and ";
-			returnString += (+femaleNameResults[0].totalCount).toLocaleString() + " total girl babies born.";
-			returnString += " (That's " + percentPopulation + " of the girl babies born.)" + "</li>";
+			returnString += "<br/>There were " + (+femaleNameResults[1].BirthCount).toLocaleString() + " girl babies named " + femaleNameResults[1].Name + " born, and ";
+			returnString += (+femaleNameResults[0].totalCount).toLocaleString() + " girls represented in this public dataset.";
+			returnString += " (That's " + percentPopulation + " of the recorded girls.)" + "</li>";
 
 		}
 		else {
-			returnString +="<br/><br/><li class=\"girl\">Of the " + (+femaleNameResults[0].totalCount).toLocaleString() + " baby girls born, none of them were named " + maleNameResults[1].Name + "!</li>";
+			returnString +="<br/><br/><li class=\"girl\">No public SSA record for girls named " + maleNameResults[1].Name + " in this year. Names with fewer than five occurrences are suppressed.</li>";
 		}
 	}
 	else {
-		returnString+="<li>There were no babies born by that name!</li>";
+		returnString+="<li>No public SSA record for this name in this year. Names with fewer than five occurrences are suppressed; missing does not mean zero births.</li>";
 	}
 	returnString +='</ul>';
 	return returnString;
@@ -340,6 +373,7 @@ function bindBabyNamesToDOM(babyData,parentDivID) {
 	if(!babyData) {
 		babyData=babyNameData;
 	}
+	babyData = babyData.slice();
 	var haveCounts;
 	/*var rscale = d3.scaleLinear()*/
 	
@@ -416,24 +450,25 @@ function removeBabyChart(parentDivID) {
  * @param {string} parentDivID 
  */
 function removeSearchResultsFromDOM(parentDivID) {
-	var list=d3.select("#"+parentDivID).selectAll("div");
-	list.remove();
+	d3.select("#"+parentDivID).text("");
 }
 
 /**
  * Generates a select element with values from all of the years available
  * @private
  */
-function loadYearsData(context, path) {
+function loadYearsData(context, path, ready) {
 	if(!path) {
 		path="./data/years.tsv";
 	}
-	else {
-		path=path.substring(0,path.indexOf("data/")+5) + "years.tsv";
-	}
 	d3.tsv(path,function (error,data) {
 		if (error) {
-			throw error;
+			showDataError(error);
+			return;
+		}
+		if (!data.length || data.some(function(row) { return !/^\d{4}$/.test(row.Year); })) {
+			showDataError(new Error("Invalid year manifest"));
+			return;
 		}
 		
 		data.sort( function (a,b) {
@@ -456,7 +491,10 @@ function loadYearsData(context, path) {
 			return d.Year;
 		});
 		addSelectHandler(context);
-		yearSelect=$("selYear");
+		yearSelect=$("#selYear");
+		$("#dataStatus").text("SSA national data: " + data[data.length - 1].Year + "-" + data[0].Year +
+			". Latest available birth year: " + data[0].Year + ".");
+		if (ready) ready();
 	});
 }
 
@@ -524,9 +562,10 @@ function onYearChangeNotGeneric() {
 	yearSelect = $("#selYear");
 
 	removeBabyNamesFromDOM("divAllBabyNames");
-	removeBabyChart("divBabyBubbleChart");
+	if (chart) removeBabyChart("divBabyBubbleChart");
 	
-	setTimeout(onYearChangeAfterRemoving,550);
+	clearTimeout(yearChangeTimer);
+	yearChangeTimer = setTimeout(onYearChangeAfterRemoving,550);
 }
 
 /**
@@ -552,10 +591,8 @@ function getPathFromYear() {
 	var year;
 	yearSelect = $("#selYear");
 	year =yearSelect.val();
-	if (!year) {
-		year = 2016;
-	}
-	return "data/names/yob"+year+".txt";
+	if (!/^\d{4}$/.test(year)) throw new Error("Choose a loaded birth year before searching.");
+	return dataRoot + "names/yob"+year+".txt";
 }
 
 /**
